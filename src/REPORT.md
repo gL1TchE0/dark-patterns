@@ -2,7 +2,7 @@
 ## Identifying Manipulative Pricing & Scarcity Strategies in E-Commerce
 
 **Student:** BALAJI N (CB.SC.U4CSE23011)
-**Course:** Business Analytics — 23CSE452
+**Course:** Business Analytics -- 23CSE452
 **Domain:** E-Commerce Dark Patterns Detection
 
 ---
@@ -74,7 +74,7 @@ The best-performing model was **SVM** with a weighted F1-score of
 | Logistic Regression | 0.9350 | 0.9347 | 0.9350 | 0.9344 | 0.9877 |
 | Random Forest | 0.9268 | 0.9262 | 0.9268 | 0.9264 | 0.9767 |
 | Gradient Boosting | 0.9268 | 0.9262 | 0.9268 | 0.9264 | 0.9672 |
-| SVM ★ | 0.9675 | 0.9687 | 0.9675 | 0.9673 | 0.9969 |
+| SVM * | 0.9675 | 0.9687 | 0.9675 | 0.9673 | 0.9969 |
 
 **Selected Model:** SVM
 
@@ -87,13 +87,13 @@ Based on our analysis, we recommend the following actions for marketplace modera
 
 1. **Automated Flagging**: Deploy the trained model to automatically flag high-risk listings for manual review, reducing moderation workload by ~60-70%.
 
-2. **Discount Cap Alerts**: Listings with >70% discount combined with low review counts (<50) should trigger automatic review — these show the strongest manipulation signal.
+2. **Discount Cap Alerts**: Listings with >70% discount combined with low review counts (<50) should trigger automatic review -- these show the strongest manipulation signal.
 
 3. **Scarcity Message Audit**: Scarcity messages ("Only X left") are the single strongest predictor of manipulation when combined with extreme discounts. Platforms should verify stock claims.
 
 4. **Coupon Stacking Rules**: Implement rules to limit coupon stacking on already heavily-discounted items, which is a common deception technique.
 
-5. **Seller Accountability**: Track manipulation risk scores per seller — repeat offenders can be flagged for policy review.
+5. **Seller Accountability**: Track manipulation risk scores per seller -- repeat offenders can be flagged for policy review.
 
 6. **Category-Specific Monitoring**: Focus moderation resources on categories with highest dark pattern prevalence (identified in Section 3.1).
 
@@ -103,7 +103,7 @@ Based on our analysis, we recommend the following actions for marketplace modera
 
 2. **Feature Engineering**: 18 features including 5 derived composite scores (promotional_intensity, price_rating_mismatch, review_to_rating_ratio, urgency_score, trust_score)
 
-3. **Labeling**: Semi-automated approach — clear High/Low cases labeled by business rules, Medium cases resolved by composite scoring heuristic
+3. **Labeling**: Semi-automated approach -- clear High/Low cases labeled by business rules, Medium cases resolved by composite scoring heuristic
 
 4. **Modeling**: 4 classifiers trained with GridSearchCV hyperparameter tuning (5-fold stratified CV)
 

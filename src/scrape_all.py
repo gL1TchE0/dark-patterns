@@ -30,24 +30,24 @@ def merge_datasets():
         print(f"  Flipkart:  {len(df_fk)} genuine listings")
         dfs.append(df_fk)
     else:
-        print("  ⚠ Flipkart CSV not found")
+        print("  [WARN] Flipkart CSV not found")
 
     if os.path.exists(config.AMAZON_RAW_CSV):
         df_az = pd.read_csv(config.AMAZON_RAW_CSV)
         print(f"  Amazon:    {len(df_az)} genuine listings")
         dfs.append(df_az)
     else:
-        print("  ⚠ Amazon CSV not found")
+        print("  [WARN] Amazon CSV not found")
 
     if os.path.exists(config.SNAPDEAL_RAW_CSV):
         df_sd = pd.read_csv(config.SNAPDEAL_RAW_CSV)
         print(f"  Snapdeal:  {len(df_sd)} genuine listings")
         dfs.append(df_sd)
     else:
-        print("  ⚠ Snapdeal CSV not found")
+        print("  [WARN] Snapdeal CSV not found")
 
     if not dfs:
-        print("  ✗ No scraped data available to merge")
+        print("  [FAIL] No scraped data available to merge")
         return None
 
     merged = pd.concat(dfs, ignore_index=True)
@@ -56,7 +56,7 @@ def merge_datasets():
     merged = merged.dropna(subset=["product_name", "selling_price"])
     
     merged.to_csv(config.RAW_MERGED_CSV, index=False)
-    print(f"\n✓ Merged dataset: {len(merged)} live scraped listings → {config.RAW_MERGED_CSV}")
+    print(f"\n[OK] Merged dataset: {len(merged)} live scraped listings -> {config.RAW_MERGED_CSV}")
     return merged
 
 
@@ -76,44 +76,44 @@ def main(force_scrape=False):
     sd_count = len(pd.read_csv(config.SNAPDEAL_RAW_CSV)) if sd_exists else 0
 
     if not force_scrape and fk_count >= 150 and az_count >= 150 and sd_count >= 150:
-        print(f"✓ Found verified live scraped datasets: Flipkart ({fk_count}), Amazon ({az_count}), Snapdeal ({sd_count})")
+        print(f"[OK] Found verified live scraped datasets: Flipkart ({fk_count}), Amazon ({az_count}), Snapdeal ({sd_count})")
         print("  Merging and validating...")
         return merge_datasets()
 
-    # ── Step 1: Scrape Amazon India ──────────────────────────────────────
+    # -- Step 1: Scrape Amazon India --------------------------------------
     if force_scrape or az_count < 150:
         print("\n--- PHASE 1: Scraping Amazon India ---")
         try:
             amazon_listings = scrape_amazon()
             print(f"  Amazon scraping finished: {len(amazon_listings)} listings")
         except Exception as e:
-            print(f"  ✗ Amazon scraping error: {e}")
+            print(f"  [FAIL] Amazon scraping error: {e}")
     else:
-        print(f"\n✓ Using existing Amazon live scraped dataset ({az_count} listings)")
+        print(f"\n[OK] Using existing Amazon live scraped dataset ({az_count} listings)")
 
-    # ── Step 2: Scrape Flipkart via Selenium Headless Chrome ─────────────
+    # -- Step 2: Scrape Flipkart via Selenium Headless Chrome -------------
     if force_scrape or fk_count < 150:
         print("\n--- PHASE 2: Scraping Flipkart (Selenium Headless Chrome) ---")
         try:
             flipkart_listings = scrape_flipkart()
             print(f"  Flipkart scraping finished: {len(flipkart_listings)} listings")
         except Exception as e:
-            print(f"  ✗ Flipkart scraping error: {e}")
+            print(f"  [FAIL] Flipkart scraping error: {e}")
     else:
-        print(f"\n✓ Using existing Flipkart live scraped dataset ({fk_count} listings)")
+        print(f"\n[OK] Using existing Flipkart live scraped dataset ({fk_count} listings)")
 
-    # ── Step 3: Scrape Snapdeal ──────────────────────────────────────────
+    # -- Step 3: Scrape Snapdeal ------------------------------------------
     if force_scrape or sd_count < 150:
         print("\n--- PHASE 3: Scraping Snapdeal ---")
         try:
             snapdeal_listings = scrape_snapdeal(target_count=200)
             print(f"  Snapdeal scraping finished: {len(snapdeal_listings)} listings")
         except Exception as e:
-            print(f"  ✗ Snapdeal scraping error: {e}")
+            print(f"  [FAIL] Snapdeal scraping error: {e}")
     else:
-        print(f"\n✓ Using existing Snapdeal live scraped dataset ({sd_count} listings)")
+        print(f"\n[OK] Using existing Snapdeal live scraped dataset ({sd_count} listings)")
 
-    # ── Step 4: Merge and Validate ───────────────────────────────────────
+    # -- Step 4: Merge and Validate ---------------------------------------
     print("\n--- PHASE 4: Merging & Validating Datasets ---")
     merged_df = merge_datasets()
 
@@ -124,9 +124,9 @@ def main(force_scrape=False):
         print(f"Categories: {merged_df['category'].value_counts().to_dict()}")
         print("=" * 60)
     elif merged_df is not None:
-        print(f"\n⚠ Warning: Dataset contains {len(merged_df)} listings (target: 300–500).")
+        print(f"\n[WARN] Dataset contains {len(merged_df)} listings (target: 300-500).")
     else:
-        print("\n✗ Failed to produce raw dataset.")
+        print("\n[FAIL] Failed to produce raw dataset.")
 
 if __name__ == "__main__":
     main()

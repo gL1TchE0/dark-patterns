@@ -23,15 +23,15 @@ def apply_rule_based_labels(df):
     Apply predefined business rules to auto-label clear Low and High risk listings.
     Everything else is labeled Medium (for manual review).
     """
-    print("── Applying Rule-Based Labels ──────────────────────────────\n")
+    print("-- Applying Rule-Based Labels ------------------------------\n")
 
     labels = pd.Series("Medium", index=df.index)
 
-    # ═══════════════════════════════════════════════════════════════════
+    # ===================================================================
     # HIGH RISK RULES
     # A listing gets a "flag" for each suspicious signal.
     # If flags >= HIGH_RISK_MIN_FLAGS, it's auto-labeled HIGH.
-    # ═══════════════════════════════════════════════════════════════════
+    # ===================================================================
     flags = pd.DataFrame(index=df.index)
 
     # Flag 1: Extreme discount (>= 70%)
@@ -67,15 +67,15 @@ def apply_rule_based_labels(df):
     high_risk_mask = total_flags >= config.HIGH_RISK_MIN_FLAGS
     labels[high_risk_mask] = "High"
 
-    print(f"  HIGH RISK (≥{config.HIGH_RISK_MIN_FLAGS} flags): {high_risk_mask.sum()} listings")
+    print(f"  HIGH RISK (>={config.HIGH_RISK_MIN_FLAGS} flags): {high_risk_mask.sum()} listings")
     print(f"    Flag breakdown:")
     for col in flags.columns:
         print(f"      {col}: {flags[col].sum()} listings triggered")
 
-    # ═══════════════════════════════════════════════════════════════════
+    # ===================================================================
     # LOW RISK RULES
     # All conditions must be met for auto LOW label.
-    # ═══════════════════════════════════════════════════════════════════
+    # ===================================================================
     low_risk_mask = (
         (df["discount_percentage"] <= config.LOW_RISK_RULES["max_discount"])
         & (df["rating"] >= config.LOW_RISK_RULES["min_rating"])
@@ -90,11 +90,11 @@ def apply_rule_based_labels(df):
 
     print(f"\n  LOW RISK (all conditions met): {low_risk_mask.sum()} listings")
 
-    # ═══════════════════════════════════════════════════════════════════
+    # ===================================================================
     # MEDIUM = everything else
-    # ═══════════════════════════════════════════════════════════════════
+    # ===================================================================
     medium_count = (labels == "Medium").sum()
-    print(f"\n  MEDIUM (ambiguous → manual review): {medium_count} listings")
+    print(f"\n  MEDIUM (ambiguous -> manual review): {medium_count} listings")
 
     df["manipulation_risk"] = labels
     df["auto_labeled"] = labels != "Medium"
@@ -109,7 +109,7 @@ def auto_label_medium_cases(df):
     heuristic rather than manual review. This uses the urgency_score and
     trust_score to classify ambiguous listings.
     """
-    print("\n── Auto-Resolving Medium Cases (Heuristic) ─────────────────\n")
+    print("\n-- Auto-Resolving Medium Cases (Heuristic) -----------------\n")
 
     medium_mask = df["manipulation_risk"] == "Medium"
     medium_df = df[medium_mask].copy()
@@ -119,7 +119,7 @@ def auto_label_medium_cases(df):
         return df
 
     # Use a composite suspicion score
-    # Higher suspicion → High risk, lower → Low risk
+    # Higher suspicion -> High risk, lower -> Low risk
     suspicion = (
         medium_df["promotional_intensity"] * 1.5
         + medium_df["urgency_score"]
@@ -143,18 +143,18 @@ def auto_label_medium_cases(df):
     still_medium = (new_labels == "Medium").sum()
 
     print(f"  Resolved {len(medium_df)} medium cases:")
-    print(f"    → Low:    {low_resolved}")
-    print(f"    → Medium: {still_medium} (kept as boundary)")
-    print(f"    → High:   {high_resolved}")
+    print(f"    -> Low:    {low_resolved}")
+    print(f"    -> Medium: {still_medium} (kept as boundary)")
+    print(f"    -> High:   {high_resolved}")
 
     return df
 
 
 def main():
     """Run the full labeling pipeline."""
-    print("╔══════════════════════════════════════════════════════════╗")
-    print("║  Semi-Automated Labeling Pipeline                        ║")
-    print("╚══════════════════════════════════════════════════════════╝\n")
+    print("+==========================================================+")
+    print("|  Semi-Automated Labeling Pipeline                        |")
+    print("+==========================================================+\n")
 
     # Load processed data
     df = pd.read_csv(config.PROCESSED_CSV)
@@ -166,7 +166,7 @@ def main():
     # Step 2: Resolve medium cases
     df = auto_label_medium_cases(df)
 
-    # ── Final distribution ───────────────────────────────────────────────
+    # -- Final distribution -----------------------------------------------
     print(f"\n{'=' * 60}")
     print("FINAL LABEL DISTRIBUTION")
     print(f"{'=' * 60}")
@@ -175,13 +175,13 @@ def main():
     for label in ["Low", "Medium", "High"]:
         count = dist.get(label, 0)
         pct = count / total * 100
-        bar = "█" * int(pct / 2)
+        bar = "#" * int(pct / 2)
         print(f"  {label:6s}: {count:4d} ({pct:5.1f}%) {bar}")
 
     print(f"\n  Auto-labeled: {df['auto_labeled'].sum()} ({df['auto_labeled'].mean()*100:.1f}%)")
     print(f"  Heuristic-resolved: {(~df['auto_labeled']).sum()} ({(~df['auto_labeled']).mean()*100:.1f}%)")
 
-    # ── Cross-tab: risk by category and platform ─────────────────────────
+    # -- Cross-tab: risk by category and platform -------------------------
     print(f"\n{'=' * 60}")
     print("RISK BY CATEGORY")
     print(f"{'=' * 60}")
@@ -194,13 +194,13 @@ def main():
     cp = pd.crosstab(df["platform"], df["manipulation_risk"], margins=True)
     print(cp.to_string())
 
-    # ── Save ─────────────────────────────────────────────────────────────
+    # -- Save -------------------------------------------------------------
     df.to_csv(config.LABELED_CSV, index=False)
-    print(f"\n✓ Labeled data saved to {config.LABELED_CSV}")
+    print(f"\n[OK] Labeled data saved to {config.LABELED_CSV}")
 
     # Also save as "final" for model training
     df.to_csv(config.FINAL_LABELED_CSV, index=False)
-    print(f"✓ Final labeled data saved to {config.FINAL_LABELED_CSV}")
+    print(f"[OK] Final labeled data saved to {config.FINAL_LABELED_CSV}")
 
     return df
 

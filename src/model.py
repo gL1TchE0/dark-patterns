@@ -41,7 +41,7 @@ import config
 
 warnings.filterwarnings("ignore")
 
-# ── Plot Style ───────────────────────────────────────────────────────────────
+# -- Plot Style ---------------------------------------------------------------
 plt.rcParams.update({
     "figure.facecolor": "#0d1117",
     "axes.facecolor": "#161b22",
@@ -68,7 +68,7 @@ def load_and_prepare_data():
     available_features = [c for c in config.FEATURE_COLUMNS if c in df.columns]
     missing = set(config.FEATURE_COLUMNS) - set(available_features)
     if missing:
-        print(f"  ⚠ Missing features (skipped): {missing}")
+        print(f"  [WARN] Missing features (skipped): {missing}")
 
     X = df[available_features].copy()
     y = df[config.TARGET_COLUMN].copy()
@@ -150,9 +150,9 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, le, feature_names):
     print("=" * 60)
 
     for name, spec in models.items():
-        print(f"\n{'─' * 50}")
+        print(f"\n{'-' * 50}")
         print(f"Training: {name}")
-        print(f"{'─' * 50}")
+        print(f"{'-' * 50}")
 
         # Use scaled data for SVM and LR
         if name in ["SVM", "Logistic Regression"]:
@@ -216,7 +216,7 @@ def train_and_evaluate(X_train, X_test, y_train, y_test, le, feature_names):
         print(f"  F1 (weighted):{f1:.4f}")
         if roc_auc:
             print(f"  ROC-AUC:     {roc_auc:.4f}")
-        print(f"  CV F1:       {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
+        print(f"  CV F1:       {cv_scores.mean():.4f} +/- {cv_scores.std():.4f}")
 
     return results
 
@@ -244,7 +244,7 @@ def select_best_model(results):
 
     # Select best by F1 weighted
     best_name = max(results, key=lambda k: results[k]["f1_weighted"])
-    print(f"\n★ Best Model: {best_name} (F1 = {results[best_name]['f1_weighted']:.4f})")
+    print(f"\n* Best Model: {best_name} (F1 = {results[best_name]['f1_weighted']:.4f})")
 
     return best_name, comp_df
 
@@ -264,7 +264,7 @@ def plot_model_comparison(comp_df):
 
     ax.set_xlabel("Model")
     ax.set_ylabel("Score")
-    ax.set_title("Model Comparison — Performance Metrics", fontweight="bold", fontsize=14)
+    ax.set_title("Model Comparison -- Performance Metrics", fontweight="bold", fontsize=14)
     ax.set_xticks(x + width * 1.5)
     ax.set_xticklabels(comp_df["Model"], rotation=15, ha="right")
     ax.legend(framealpha=0.8)
@@ -273,7 +273,7 @@ def plot_model_comparison(comp_df):
     path = os.path.join(config.MODEL_DIR, "model_comparison.png")
     fig.savefig(path, bbox_inches="tight", pad_inches=0.3)
     plt.close(fig)
-    print(f"  ✓ Saved: model_comparison.png")
+    print(f"  [OK] Saved: model_comparison.png")
     return path
 
 
@@ -298,7 +298,7 @@ def plot_confusion_matrices(results, le):
     path = os.path.join(config.MODEL_DIR, "confusion_matrices.png")
     fig.savefig(path, bbox_inches="tight", pad_inches=0.3)
     plt.close(fig)
-    print(f"  ✓ Saved: confusion_matrices.png")
+    print(f"  [OK] Saved: confusion_matrices.png")
     return path
 
 
@@ -309,7 +309,7 @@ def plot_feature_importance(best_model, feature_names, best_name):
     elif hasattr(best_model, "coef_"):
         importances = np.abs(best_model.coef_).mean(axis=0)
     else:
-        print("  ⚠ Model doesn't support feature importance extraction")
+        print("  [WARN] Model doesn't support feature importance extraction")
         return None
 
     idx = np.argsort(importances)[::-1]
@@ -323,7 +323,7 @@ def plot_feature_importance(best_model, feature_names, best_name):
     ax.set_yticks(range(len(sorted_features)))
     ax.set_yticklabels(sorted_features[::-1])
     ax.set_xlabel("Importance")
-    ax.set_title(f"Feature Importance — {best_name}", fontweight="bold", fontsize=14)
+    ax.set_title(f"Feature Importance -- {best_name}", fontweight="bold", fontsize=14)
 
     # Add value labels
     for i, (bar, val) in enumerate(zip(bars, sorted_importances[::-1])):
@@ -333,7 +333,7 @@ def plot_feature_importance(best_model, feature_names, best_name):
     path = os.path.join(config.MODEL_DIR, "feature_importance.png")
     fig.savefig(path, bbox_inches="tight", pad_inches=0.3)
     plt.close(fig)
-    print(f"  ✓ Saved: feature_importance.png")
+    print(f"  [OK] Saved: feature_importance.png")
     return path
 
 
@@ -358,12 +358,12 @@ def save_results(best_name, results, comp_df, le, feature_names):
         },
     }
     joblib.dump(model_data, config.BEST_MODEL_PATH)
-    print(f"\n✓ Best model saved to {config.BEST_MODEL_PATH}")
+    print(f"\n[OK] Best model saved to {config.BEST_MODEL_PATH}")
 
     # Save comparison table
     comp_path = os.path.join(config.MODEL_DIR, "model_comparison.csv")
     comp_df.to_csv(comp_path, index=False)
-    print(f"✓ Comparison table saved to {comp_path}")
+    print(f"[OK] Comparison table saved to {comp_path}")
 
     # Save detailed metrics JSON
     metrics_json = {}
@@ -383,31 +383,31 @@ def save_results(best_name, results, comp_df, le, feature_names):
     metrics_path = os.path.join(config.MODEL_DIR, "all_model_metrics.json")
     with open(metrics_path, "w") as f:
         json.dump(metrics_json, f, indent=2, default=str)
-    print(f"✓ All metrics saved to {metrics_path}")
+    print(f"[OK] All metrics saved to {metrics_path}")
 
 
 def main():
     """Run the full model training pipeline."""
-    print("╔══════════════════════════════════════════════════════════╗")
-    print("║  Model Training & Evaluation                             ║")
-    print("╚══════════════════════════════════════════════════════════╝\n")
+    print("+==========================================================+")
+    print("|  Model Training & Evaluation                             |")
+    print("+==========================================================+\n")
 
-    # ── Load & Prepare ───────────────────────────────────────────────────
+    # -- Load & Prepare ---------------------------------------------------
     X, y, le, feature_names, df = load_and_prepare_data()
 
-    # ── Train/Test Split ─────────────────────────────────────────────────
+    # -- Train/Test Split -------------------------------------------------
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE, stratify=y
     )
     print(f"\n  Train: {len(X_train)} | Test: {len(X_test)}")
 
-    # ── Train & Evaluate ─────────────────────────────────────────────────
+    # -- Train & Evaluate -------------------------------------------------
     results = train_and_evaluate(X_train, X_test, y_train, y_test, le, feature_names)
 
-    # ── Select Best ──────────────────────────────────────────────────────
+    # -- Select Best ------------------------------------------------------
     best_name, comp_df = select_best_model(results)
 
-    # ── Visualizations ───────────────────────────────────────────────────
+    # -- Visualizations ---------------------------------------------------
     print(f"\n{'=' * 60}")
     print("GENERATING EVALUATION CHARTS")
     print(f"{'=' * 60}\n")
@@ -415,10 +415,10 @@ def main():
     plot_confusion_matrices(results, le)
     plot_feature_importance(results[best_name]["model"], feature_names, best_name)
 
-    # ── Save Results ─────────────────────────────────────────────────────
+    # -- Save Results -----------------------------------------------------
     save_results(best_name, results, comp_df, le, feature_names)
 
-    # ── Final Summary ────────────────────────────────────────────────────
+    # -- Final Summary ----------------------------------------------------
     print(f"\n{'=' * 60}")
     print("TRAINING COMPLETE")
     print(f"{'=' * 60}")

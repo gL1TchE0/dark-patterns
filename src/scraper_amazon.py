@@ -47,25 +47,25 @@ def fetch_page(session, url, retries=3):
             if resp.status_code == 200:
                 text_lower = resp.text.lower()
                 if "validatecaptcha" in text_lower or "enter the characters you see below" in text_lower:
-                    print(f"  ⚠ Amazon CAPTCHA encountered (attempt {attempt+1}). Retrying...")
+                    print(f"  [WARN] Amazon CAPTCHA encountered (attempt {attempt+1}). Retrying...")
                     time.sleep(5)
                     continue
                 return resp.text
             elif resp.status_code in (503, 429):
                 wait = (attempt + 1) * 6
-                print(f"  ⚠ HTTP {resp.status_code}. Waiting {wait}s...")
+                print(f"  [WARN] HTTP {resp.status_code}. Waiting {wait}s...")
                 time.sleep(wait)
             else:
-                print(f"  ⚠ HTTP {resp.status_code} for {url}")
+                print(f"  [WARN] HTTP {resp.status_code} for {url}")
                 time.sleep(3)
         except requests.RequestException as e:
-            print(f"  ✗ Request error (attempt {attempt+1}): {e}")
+            print(f"  [FAIL] Request error (attempt {attempt+1}): {e}")
             time.sleep(3)
     return None
 
 
 def extract_price(text):
-    """Extract numeric price from text like '₹1,299' → 1299.0"""
+    """Extract numeric price from text like '₹1,299' -> 1299.0"""
     if not text:
         return None
     text = text.replace('Rs.', '').replace('Rs', '').replace(',', '').replace('₹', '').strip()
@@ -77,7 +77,7 @@ def extract_price(text):
 
 
 def extract_number(text):
-    """Extract first number from text like '1,234' → 1234"""
+    """Extract first number from text like '1,234' -> 1234"""
     if not text:
         return 0
     nums = re.sub(r"[^\d]", "", text.replace(",", ""))
@@ -146,7 +146,7 @@ def parse_single_amazon_card(card, category):
         "product_url": "",
     }
 
-    # ── Product Name ─────────────────────────────────────────────────────
+    # -- Product Name -----------------------------------------------------
     # Amazon uses h2 > a > span for product titles
     title_tag = card.find("h2")
     if title_tag:
@@ -165,7 +165,7 @@ def parse_single_amazon_card(card, category):
                 listing["product_name"] = t
                 break
 
-    # ── Prices ───────────────────────────────────────────────────────────
+    # -- Prices -----------------------------------------------------------
     # Current price: span.a-price-whole
     price_whole = card.find("span", class_="a-price-whole")
     if price_whole:
@@ -204,7 +204,7 @@ def parse_single_amazon_card(card, category):
     if listing["selling_price"] and not listing["original_price"]:
         listing["original_price"] = listing["selling_price"]
 
-    # ── Discount ─────────────────────────────────────────────────────────
+    # -- Discount ---------------------------------------------------------
     discount_match = re.search(r"\((\d{1,2})%\s*off\)", text_content, re.IGNORECASE)
     if not discount_match:
         discount_match = re.search(r"(\d{1,2})%\s*off", text_content, re.IGNORECASE)
@@ -215,7 +215,7 @@ def parse_single_amazon_card(card, category):
             (1 - listing["selling_price"] / listing["original_price"]) * 100, 1
         )
 
-    # ── Rating ───────────────────────────────────────────────────────────
+    # -- Rating -----------------------------------------------------------
     # Amazon: span with "a-icon-alt" containing "X.X out of 5 stars"
     rating_tag = card.find("span", class_="a-icon-alt")
     if rating_tag:
@@ -228,7 +228,7 @@ def parse_single_amazon_card(card, category):
         if rm:
             listing["rating"] = float(rm.group(1))
 
-    # ── Rating Count ─────────────────────────────────────────────────────
+    # -- Rating Count -----------------------------------------------------
     # Amazon shows rating count as a link like "(1,234)"
     rating_link = card.find("a", href=re.compile(r"#customerReviews|product-reviews"))
     if rating_link:
@@ -240,7 +240,7 @@ def parse_single_amazon_card(card, category):
             listing["rating_count"] = extract_number(rc_match.group(1))
             listing["review_count"] = listing["rating_count"]
 
-    # ── Delivery ─────────────────────────────────────────────────────────
+    # -- Delivery ---------------------------------------------------------
     delivery_match = re.search(
         r"(free delivery|get it by [^|]+|delivery [^|]+)", all_text
     )
@@ -258,12 +258,12 @@ def parse_single_amazon_card(card, category):
     if days_match:
         listing["delivery_days"] = int(days_match.group(1))
 
-    # ── Sponsored ────────────────────────────────────────────────────────
+    # -- Sponsored --------------------------------------------------------
     sponsored_tag = card.find("span", string=re.compile(r"Sponsored", re.IGNORECASE))
     if sponsored_tag or "sponsored" in all_text:
         listing["is_sponsored"] = True
 
-    # ── Promotional Badges ───────────────────────────────────────────────
+    # -- Promotional Badges -----------------------------------------------
     badges = []
     badge_patterns = [
         ("amazon's choice", "Amazon's Choice"),
@@ -286,7 +286,7 @@ def parse_single_amazon_card(card, category):
     listing["promotional_badges"] = "; ".join(badges)
     listing["promotional_badge_count"] = len(badges)
 
-    # ── Scarcity Messages ────────────────────────────────────────────────
+    # -- Scarcity Messages ------------------------------------------------
     scarcity_patterns = [
         r"only\s+\d+\s+left\s+in\s+stock",
         r"only\s+\d+\s+left",
@@ -308,7 +308,7 @@ def parse_single_amazon_card(card, category):
         listing["scarcity_message"] = "; ".join(scarcity_found)
         listing["has_scarcity_message"] = True
 
-    # ── Coupons ──────────────────────────────────────────────────────────
+    # -- Coupons ----------------------------------------------------------
     coupon_patterns = [
         r"save\s+\d+%\s+with\s+coupon",
         r"apply\s+\d+%\s+coupon",
@@ -324,7 +324,7 @@ def parse_single_amazon_card(card, category):
             listing["coupon_text"] = cm.group(0).strip()
             break
 
-    # ── Seller Type ──────────────────────────────────────────────────────
+    # -- Seller Type ------------------------------------------------------
     if "fulfilled by amazon" in all_text or "prime" in all_text:
         listing["seller_type"] = "Marketplace Fulfilled"
 
@@ -346,7 +346,7 @@ def scrape_amazon(session=None):
 
     for cat_name, cat_config in config.CATEGORIES.items():
         query = cat_config["amazon_query"]
-        print(f"\n📦 Category: {cat_name} | Query: '{query}'")
+        print(f"\n Category: {cat_name} | Query: '{query}'")
         print("-" * 40)
 
         for page_num in range(1, config.PAGES_PER_CATEGORY + 1):
@@ -356,16 +356,16 @@ def scrape_amazon(session=None):
 
             html = fetch_page(session, url)
             if not html:
-                print(f"  ✗ Failed to fetch page {page_num}")
+                print(f"  [FAIL] Failed to fetch page {page_num}")
                 continue
 
             listings = parse_amazon_listings(html, cat_name)
-            print(f"  ✓ Extracted {len(listings)} listings")
+            print(f"  [OK] Extracted {len(listings)} listings")
             all_listings.extend(listings)
             random_delay()
 
             if len(all_listings) >= config.TARGET_PER_PLATFORM:
-                print(f"\n  ✓ Reached target ({config.TARGET_PER_PLATFORM} listings)")
+                print(f"\n  [OK] Reached target ({config.TARGET_PER_PLATFORM} listings)")
                 break
 
         if len(all_listings) >= config.TARGET_PER_PLATFORM:
@@ -374,9 +374,9 @@ def scrape_amazon(session=None):
     # Save to CSV
     if all_listings:
         save_to_csv(all_listings, config.AMAZON_RAW_CSV)
-        print(f"\n✓ Saved {len(all_listings)} Amazon listings to {config.AMAZON_RAW_CSV}")
+        print(f"\n[OK] Saved {len(all_listings)} Amazon listings to {config.AMAZON_RAW_CSV}")
     else:
-        print("\n✗ No listings scraped from Amazon India")
+        print("\n[FAIL] No listings scraped from Amazon India")
 
     return all_listings
 

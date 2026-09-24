@@ -24,7 +24,7 @@ import config
 
 warnings.filterwarnings("ignore")
 
-# ── Style Setup ──────────────────────────────────────────────────────────────
+# -- Style Setup --------------------------------------------------------------
 plt.rcParams.update({
     "figure.facecolor": "#0d1117",
     "axes.facecolor": "#161b22",
@@ -50,7 +50,7 @@ def save_plot(fig, name):
     path = os.path.join(config.CHARTS_DIR, f"{name}.png")
     fig.savefig(path, bbox_inches="tight", pad_inches=0.3)
     plt.close(fig)
-    print(f"  ✓ Saved: {name}.png")
+    print(f"  [OK] Saved: {name}.png")
     return path
 
 
@@ -75,7 +75,7 @@ def plot_risk_distribution(df):
                 wedgeprops={"edgecolor": "#0d1117", "linewidth": 2})
     axes[1].set_title("Risk Level Proportions", fontweight="bold", fontsize=13)
 
-    fig.suptitle("Manipulation Risk — Overall Distribution", fontsize=15, fontweight="bold", y=1.02)
+    fig.suptitle("Manipulation Risk -- Overall Distribution", fontsize=15, fontweight="bold", y=1.02)
     return save_plot(fig, "01_risk_distribution")
 
 
@@ -128,7 +128,7 @@ def plot_rating_vs_discount(df):
         subset = df[df["manipulation_risk"] == risk]
         ax.scatter(subset["discount_percentage"], subset["rating"],
                    c=RISK_COLORS[risk], label=risk, alpha=0.5, s=30, edgecolors="#30363d", linewidths=0.3)
-    ax.set_title("Rating vs. Discount — Colored by Risk Level", fontweight="bold", fontsize=14)
+    ax.set_title("Rating vs. Discount -- Colored by Risk Level", fontweight="bold", fontsize=14)
     ax.set_xlabel("Discount (%)")
     ax.set_ylabel("Rating")
     ax.legend(title="Risk Level", framealpha=0.8)
@@ -196,7 +196,7 @@ def plot_trust_vs_urgency(df):
 
 
 def plot_price_analysis(df):
-    """9. Price analysis — MRP inflation patterns."""
+    """9. Price analysis -- MRP inflation patterns."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
     # Log price distribution by risk
@@ -221,7 +221,7 @@ def plot_price_analysis(df):
     axes[1].set_ylabel("Selling Price")
     axes[1].legend(framealpha=0.8)
 
-    fig.suptitle("Price Analysis — MRP Inflation Patterns", fontsize=15, fontweight="bold", y=1.02)
+    fig.suptitle("Price Analysis -- MRP Inflation Patterns", fontsize=15, fontweight="bold", y=1.02)
     return save_plot(fig, "09_price_analysis")
 
 
@@ -254,9 +254,9 @@ def plot_feature_distributions(df):
 
 def main():
     """Run all EDA visualizations."""
-    print("╔══════════════════════════════════════════════════════════╗")
-    print("║  Exploratory Data Analysis (EDA)                         ║")
-    print("╚══════════════════════════════════════════════════════════╝\n")
+    print("+==========================================================+")
+    print("|  Exploratory Data Analysis (EDA)                         |")
+    print("+==========================================================+\n")
 
     df = pd.read_csv(config.LABELED_CSV)
     print(f"Loaded {len(df)} labeled records\n")
@@ -274,9 +274,9 @@ def main():
     charts.append(plot_price_analysis(df))
     charts.append(plot_feature_distributions(df))
 
-    print(f"\n✓ Generated {len(charts)} charts in {config.CHARTS_DIR}")
+    print(f"\n[OK] Generated {len(charts)} charts in {config.CHARTS_DIR}")
 
-    # ── Quick stats summary ──────────────────────────────────────────────
+    # -- Quick stats summary ----------------------------------------------
     print(f"\n{'=' * 60}")
     print("DATASET SUMMARY")
     print(f"{'=' * 60}")

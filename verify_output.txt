@@ -1,0 +1,407 @@
+Found non-ASCII in 203 lines:
+  dark_patterns_pipeline.ipynb:145: U+2192 (->)
+          " Merged dataset: 744 live scraped listings -> d:\\Study Material\\BA\\Dark Patterns\\data\\raw_merged.csv\n",
+  dark_patterns_pipeline.ipynb:461: U+00D7 (x)
+           "<p>744 rows x 24 columns</p>\n",
+  dark_patterns_pipeline.ipynb:582: U+2554 (+), U+2557 (+), U+2550 (=)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:583: U+2551 (|)
+          "|  Data Preprocessing & Feature Engineering                |\n",
+  dark_patterns_pipeline.ipynb:584: U+255D (+), U+2550 (=), U+255A (+)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:588: U+2500 (-)
+          "-- Data Cleaning ------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:589: U+2192 (->)
+          "  Removed 131 duplicates -> 613 records\n",
+  dark_patterns_pipeline.ipynb:592: U+2500 (-)
+          "-- Feature Engineering -------------------------------------\n",
+  dark_patterns_pipeline.ipynb:594: U+00D7 (x)
+          "   price_rating_mismatch (discount x inverse rating)\n",
+  dark_patterns_pipeline.ipynb:596: U+00D7 (x)
+          "   urgency_score (weighted: scarcityx3 + extreme_discountx2 + coupon + rush_delivery)\n",
+  dark_patterns_pipeline.ipynb:934: U+00D7 (x)
+           "<p>613 rows x 29 columns</p>\n",
+  dark_patterns_pipeline.ipynb:1053: U+2554 (+), U+2557 (+), U+2550 (=)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:1054: U+2551 (|)
+          "|  Semi-Automated Labeling Pipeline                        |\n",
+  dark_patterns_pipeline.ipynb:1055: U+255D (+), U+2550 (=), U+255A (+)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:1059: U+2500 (-)
+          "-- Applying Rule-Based Labels ------------------------------\n",
+  dark_patterns_pipeline.ipynb:1061: U+2265 (>=)
+          "  HIGH RISK (>=3 flags): 154 listings\n",
+  dark_patterns_pipeline.ipynb:1073: U+2192 (->)
+          "  MEDIUM (ambiguous -> manual review): 409 listings\n",
+  dark_patterns_pipeline.ipynb:1075: U+2500 (-)
+          "-- Auto-Resolving Medium Cases (Heuristic) -----------------\n",
+  dark_patterns_pipeline.ipynb:1078: U+2192 (->)
+          "    -> Low:    135\n",
+  dark_patterns_pipeline.ipynb:1079: U+2192 (->)
+          "    -> Medium: 135 (kept as boundary)\n",
+  dark_patterns_pipeline.ipynb:1080: U+2192 (->)
+          "    -> High:   139\n",
+  dark_patterns_pipeline.ipynb:1085: U+2588 (#)
+          "  Low   :  185 ( 30.2%) ###############\n",
+  dark_patterns_pipeline.ipynb:1086: U+2588 (#)
+          "  Medium:  135 ( 22.0%) ###########\n",
+  dark_patterns_pipeline.ipynb:1087: U+2588 (#)
+          "  High  :  293 ( 47.8%) #######################\n",
+  dark_patterns_pipeline.ipynb:1430: U+00D7 (x)
+           "<p>613 rows x 32 columns</p>\n",
+  dark_patterns_pipeline.ipynb:1551: U+2554 (+), U+2557 (+), U+2550 (=)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:1552: U+2551 (|)
+          "|  Exploratory Data Analysis (EDA)                         |\n",
+  dark_patterns_pipeline.ipynb:1553: U+255D (+), U+2550 (=), U+255A (+)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:1897: U+2554 (+), U+2557 (+), U+2550 (=)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:1898: U+2551 (|)
+          "|  Model Training & Evaluation                             |\n",
+  dark_patterns_pipeline.ipynb:1899: U+255D (+), U+2550 (=), U+255A (+)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:1912: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1914: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1921: U+00B1 (+/-)
+          "  CV F1:       0.9652 +/- 0.0248\n",
+  dark_patterns_pipeline.ipynb:1923: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1925: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1932: U+00B1 (+/-)
+          "  CV F1:       0.9691 +/- 0.0173\n",
+  dark_patterns_pipeline.ipynb:1934: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1936: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1943: U+00B1 (+/-)
+          "  CV F1:       0.9714 +/- 0.0199\n",
+  dark_patterns_pipeline.ipynb:1945: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1947: U+2500 (-)
+          "--------------------------------------------------\n",
+  dark_patterns_pipeline.ipynb:1954: U+00B1 (+/-)
+          "  CV F1:       0.9653 +/- 0.0314\n",
+  dark_patterns_pipeline.ipynb:2899: U+2554 (+), U+2557 (+), U+2550 (=)
+          "+==========================================================+\n",
+  dark_patterns_pipeline.ipynb:2900: U+2551 (|)
+          "|  Generating Analytics Report                             |\n",
+  dark_patterns_pipeline.ipynb:2901: U+255D (+), U+2550 (=), U+255A (+)
+          "+==========================================================+\n",
+  README.md:26: U+2500 (-), U+251C (|)
+    |-- data/                         # Datasets (raw + processed)
+  README.md:27: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- raw/                      # Per-platform scraped CSVs
+  README.md:28: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- raw_merged.csv
+  README.md:29: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- processed_listings.csv
+  README.md:30: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- labeled_listings.csv
+  README.md:31: U+2514 (+), U+2500 (-), U+2502 (|)
+    |   +-- final_labeled_listings.csv
+  README.md:32: U+2500 (-), U+251C (|)
+    |-- src/                          # Source code & generated outputs
+  README.md:33: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- config.py                 # Central configuration (paths, thresholds)
+  README.md:34: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- scrape_all.py             # Scraping orchestrator
+  README.md:35: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- scraper_amazon.py         # Amazon India scraper
+  README.md:36: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- scraper_flipkart.py       # Flipkart scraper
+  README.md:37: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- scraper_snapdeal.py       # Snapdeal scraper
+  README.md:38: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- preprocessing.py          # Data cleaning & feature engineering
+  README.md:39: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- labeling.py               # Semi-automated risk labeling
+  README.md:40: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- eda.py                    # Exploratory data analysis & charts
+  README.md:41: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- model.py                  # Model training & evaluation
+  README.md:42: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- generate_report.py        # Auto-generates analytics report
+  README.md:43: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- run_pipeline.py           # End-to-end pipeline runner
+  README.md:44: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- REPORT.md                 # Generated analytics report
+  README.md:45: U+2500 (-), U+251C (|), U+2502 (|)
+    |   |-- dashboard.html            # Interactive dashboard
+  README.md:46: U+2514 (+), U+2500 (-), U+2502 (|)
+    |   +-- output/
+  README.md:47: U+2500 (-), U+251C (|), U+2502 (|)
+    |       |-- charts/               # EDA visualizations (10 PNGs)
+  README.md:48: U+2514 (+), U+2500 (-), U+2502 (|)
+    |       +-- model_results/        # Metrics, confusion matrices, feature importance
+  README.md:49: U+2500 (-), U+251C (|)
+    |-- dark_patterns_pipeline.ipynb  # Jupyter notebook -- runs the full pipeline
+  README.md:50: U+2500 (-), U+251C (|)
+    |-- CB.SC.U4CSE23011_Case_Study_Report.docx
+  README.md:51: U+2500 (-), U+251C (|)
+    |-- CB.SC.U4CSE23011_Case_Study_Report.pdf
+  README.md:52: U+2500 (-), U+251C (|)
+    |-- requirements.txt
+  README.md:53: U+2500 (-), U+251C (|)
+    |-- .gitignore
+  README.md:54: U+2514 (+), U+2500 (-)
+    +-- README.md
+  README.md:100: U+25B6 (>)
+    ## > Running the Pipeline
+  src\config.py:8: U+2500 (-)
+    # --- Project Paths --------------------------------------------------------------
+  src\config.py:21: U+2500 (-)
+    # --- Scraping Configuration -----------------------------------------------------
+  src\config.py:78: U+2500 (-)
+    # --- Flipkart Specific ----------------------------------------------------------
+  src\config.py:82: U+2500 (-)
+    # --- Amazon Specific ------------------------------------------------------------
+  src\config.py:86: U+2500 (-)
+    # --- Snapdeal Specific (Method 4) -----------------------------------------------
+  src\config.py:90: U+2500 (-)
+    # --- Merged / Processed Data ----------------------------------------------------
+  src\config.py:96: U+2500 (-)
+    # --- Labeling Thresholds --------------------------------------------------------
+  src\config.py:99: U+2265 (>=)
+    # HIGH RISK if >= HIGH_RISK_MIN_FLAGS of these are true:
+  src\config.py:104: U+2265 (>=)
+        "promotional_badge_count": 2,     # >=2 promotional badges
+  src\config.py:116: U+2264 (<=)
+        "max_discount": 30,              # Discount <= 30%
+  src\config.py:117: U+2265 (>=)
+        "min_rating": 4.0,               # Rating >= 4.0
+  src\config.py:120: U+2264 (<=)
+        "max_promotional_cues": 1,       # <=1 promotional element
+  src\config.py:126: U+2500 (-)
+    # --- Model Training -------------------------------------------------------------
+  src\config.py:132: U+2500 (-)
+    # --- Feature Columns (used in model training) -----------------------------------
+  src\dashboard.html:40: U+2500 (-)
+            /* -- Glassmorphism Background Orbs ----------------------------- */
+  src\dashboard.html:90: U+2500 (-)
+            /* -- Header ---------------------------------------------------- */
+  src\dashboard.html:154: U+2500 (-)
+            /* -- Main Container -------------------------------------------- */
+  src\dashboard.html:161: U+2500 (-)
+            /* -- Glass Cards Base ------------------------------------------ */
+  src\dashboard.html:178: U+2500 (-)
+            /* -- KPI Cards ------------------------------------------------- */
+  src\dashboard.html:217: U+2500 (-)
+            /* -- Section / Chart Cards ------------------------------------- */
+  src\dashboard.html:274: U+2500 (-)
+            /* -- Data Table ------------------------------------------------ */
+  src\dashboard.html:332: U+2500 (-)
+            /* -- Recommendations -------------------------------------------- */
+  src\dashboard.html:371: U+2500 (-)
+            /* -- Footer ---------------------------------------------------- */
+  src\dashboard.html:383: U+2500 (-)
+            /* -- Loading animation ---------------------------------------- */
+  src\dashboard.html:425: U+2500 (-)
+            /* -- Responsive ------------------------------------------------ */
+  src\dashboard.html:611: U+2550 (=)
+        // ===============================================================
+  src\dashboard.html:614: U+2550 (=)
+        // ===============================================================
+  src\dashboard.html:634: U+2500 (-)
+        // -- Try loading data from CSV/JSON, otherwise use defaults -----
+  src\dashboard.html:828: U+2500 (-)
+        // -- Render functions --------------------------------------------
+  src\dashboard.html:1114: U+2500 (-)
+        // -- Initialize --------------------------------------------------
+  src\eda.py:27: U+2500 (-)
+    # -- Style Setup --------------------------------------------------------------
+  src\eda.py:257: U+2554 (+), U+2557 (+), U+2550 (=)
+        print("+==========================================================+")
+  src\eda.py:258: U+2551 (|)
+        print("|  Exploratory Data Analysis (EDA)                         |")
+  src\eda.py:259: U+255D (+), U+2550 (=), U+255A (+)
+        print("+==========================================================+\n")
+  src\eda.py:279: U+2500 (-)
+        # -- Quick stats summary ----------------------------------------------
+  src\generate_report.py:23: U+2554 (+), U+2557 (+), U+2550 (=)
+        print("+==========================================================+")
+  src\generate_report.py:24: U+2551 (|)
+        print("|  Generating Analytics Report                             |")
+  src\generate_report.py:25: U+255D (+), U+2550 (=), U+255A (+)
+        print("+==========================================================+\n")
+  src\generate_report.py:27: U+2500 (-)
+        # -- Load data --------------------------------------------------------
+  src\generate_report.py:39: U+2500 (-)
+        # -- Build report -----------------------------------------------------
+  src\generate_report.py:48: U+2500 (-)
+        # -- 1. Executive Summary ---------------------------------------------
+  src\generate_report.py:60: U+2500 (-)
+        # -- 2. Dataset Overview ----------------------------------------------
+  src\generate_report.py:81: U+2500 (-)
+        # -- 3. Key Findings --------------------------------------------------
+  src\generate_report.py:127: U+2500 (-)
+        # -- 4. Model Performance ---------------------------------------------
+  src\generate_report.py:145: U+2500 (-)
+        # -- 5. Recommendations -----------------------------------------------
+  src\generate_report.py:155: U+2500 (-)
+        # -- 6. Methodology --------------------------------------------------
+  src\generate_report.py:163: U+2500 (-)
+        # -- Write report -----------------------------------------------------
+  src\labeling.py:26: U+2500 (-)
+        print("-- Applying Rule-Based Labels ------------------------------\n")
+  src\labeling.py:30: U+2550 (=)
+        # ===================================================================
+  src\labeling.py:34: U+2550 (=)
+        # ===================================================================
+  src\labeling.py:70: U+2265 (>=)
+        print(f"  HIGH RISK (>={config.HIGH_RISK_MIN_FLAGS} flags): {high_risk_mask.sum()} listings")
+  src\labeling.py:75: U+2550 (=)
+        # ===================================================================
+  src\labeling.py:78: U+2550 (=)
+        # ===================================================================
+  src\labeling.py:93: U+2550 (=)
+        # ===================================================================
+  src\labeling.py:95: U+2550 (=)
+        # ===================================================================
+  src\labeling.py:112: U+2500 (-)
+        print("\n-- Auto-Resolving Medium Cases (Heuristic) -----------------\n")
+  src\labeling.py:155: U+2554 (+), U+2557 (+), U+2550 (=)
+        print("+==========================================================+")
+  src\labeling.py:156: U+2551 (|)
+        print("|  Semi-Automated Labeling Pipeline                        |")
+  src\labeling.py:157: U+255D (+), U+2550 (=), U+255A (+)
+        print("+==========================================================+\n")
+  src\labeling.py:169: U+2500 (-)
+        # -- Final distribution -----------------------------------------------
+  src\labeling.py:178: U+2588 (#)
+            bar = "#" * int(pct / 2)
+  src\labeling.py:184: U+2500 (-)
+        # -- Cross-tab: risk by category and platform -------------------------
+  src\labeling.py:197: U+2500 (-)
+        # -- Save -------------------------------------------------------------
+  src\model.py:44: U+2500 (-)
+    # -- Plot Style ---------------------------------------------------------------
+  src\model.py:153: U+2500 (-)
+            print(f"\n{'-' * 50}")
+  src\model.py:155: U+2500 (-)
+            print(f"{'-' * 50}")
+  src\model.py:219: U+00B1 (+/-)
+            print(f"  CV F1:       {cv_scores.mean():.4f} +/- {cv_scores.std():.4f}")
+  src\model.py:391: U+2554 (+), U+2557 (+), U+2550 (=)
+        print("+==========================================================+")
+  src\model.py:392: U+2551 (|)
+        print("|  Model Training & Evaluation                             |")
+  src\model.py:393: U+255D (+), U+2550 (=), U+255A (+)
+        print("+==========================================================+\n")
+  src\model.py:395: U+2500 (-)
+        # -- Load & Prepare ---------------------------------------------------
+  src\model.py:398: U+2500 (-)
+        # -- Train/Test Split -------------------------------------------------
+  src\model.py:404: U+2500 (-)
+        # -- Train & Evaluate -------------------------------------------------
+  src\model.py:407: U+2500 (-)
+        # -- Select Best ------------------------------------------------------
+  src\model.py:410: U+2500 (-)
+        # -- Visualizations ---------------------------------------------------
+  src\model.py:418: U+2500 (-)
+        # -- Save Results -----------------------------------------------------
+  src\model.py:421: U+2500 (-)
+        # -- Final Summary ----------------------------------------------------
+  src\preprocessing.py:28: U+2500 (-)
+        print("\n-- Data Cleaning ------------------------------------------")
+  src\preprocessing.py:31: U+2500 (-)
+        # -- Drop duplicates --------------------------------------------------
+  src\preprocessing.py:35: U+2500 (-)
+        # -- Handle missing prices --------------------------------------------
+  src\preprocessing.py:55: U+2500 (-)
+        # -- Recompute discount if missing ------------------------------------
+  src\preprocessing.py:65: U+2500 (-)
+        # -- Numeric fields ---------------------------------------------------
+  src\preprocessing.py:76: U+2500 (-)
+        # -- Boolean fields ---------------------------------------------------
+  src\preprocessing.py:89: U+2500 (-)
+        print("\n-- Feature Engineering -------------------------------------")
+  src\preprocessing.py:91: U+2500 (-)
+        # -- 1. Promotional Intensity -----------------------------------------
+  src\preprocessing.py:101: U+2500 (-)
+        # -- 2. Price-Rating Mismatch -----------------------------------------
+  src\preprocessing.py:112: U+2500 (-)
+        # -- 3. Review-to-Rating Ratio ----------------------------------------
+  src\preprocessing.py:122: U+2500 (-)
+        # -- 4. Urgency Score -------------------------------------------------
+  src\preprocessing.py:132: U+2500 (-)
+        # -- 5. Trust Score ---------------------------------------------------
+  src\preprocessing.py:151: U+2554 (+), U+2557 (+), U+2550 (=)
+        print("+==========================================================+")
+  src\preprocessing.py:152: U+2551 (|)
+        print("|  Data Preprocessing & Feature Engineering                |")
+  src\preprocessing.py:153: U+255D (+), U+2550 (=), U+255A (+)
+        print("+==========================================================+\n")
+  src\preprocessing.py:159: U+2500 (-)
+        # -- Save processed data ----------------------------------------------
+  src\preprocessing.py:163: U+2500 (-)
+        # -- Quick summary stats ----------------------------------------------
+  src\scraper_amazon.py:149: U+2500 (-)
+        # -- Product Name -----------------------------------------------------
+  src\scraper_amazon.py:168: U+2500 (-)
+        # -- Prices -----------------------------------------------------------
+  src\scraper_amazon.py:207: U+2500 (-)
+        # -- Discount ---------------------------------------------------------
+  src\scraper_amazon.py:218: U+2500 (-)
+        # -- Rating -----------------------------------------------------------
+  src\scraper_amazon.py:231: U+2500 (-)
+        # -- Rating Count -----------------------------------------------------
+  src\scraper_amazon.py:243: U+2500 (-)
+        # -- Delivery ---------------------------------------------------------
+  src\scraper_amazon.py:261: U+2500 (-)
+        # -- Sponsored --------------------------------------------------------
+  src\scraper_amazon.py:266: U+2500 (-)
+        # -- Promotional Badges -----------------------------------------------
+  src\scraper_amazon.py:289: U+2500 (-)
+        # -- Scarcity Messages ------------------------------------------------
+  src\scraper_amazon.py:311: U+2500 (-)
+        # -- Coupons ----------------------------------------------------------
+  src\scraper_amazon.py:327: U+2500 (-)
+        # -- Seller Type ------------------------------------------------------
+  src\scraper_flipkart.py:101: U+2500 (-)
+        # -- Product URL ------------------------------------------------------
+  src\scraper_flipkart.py:108: U+2500 (-)
+        # -- Product Name -----------------------------------------------------
+  src\scraper_flipkart.py:129: U+2500 (-)
+        # -- Prices -----------------------------------------------------------
+  src\scraper_flipkart.py:144: U+2500 (-)
+        # -- Discount Percentage ----------------------------------------------
+  src\scraper_flipkart.py:155: U+2500 (-)
+        # -- Rating -----------------------------------------------------------
+  src\scraper_flipkart.py:167: U+2500 (-)
+        # -- Rating Count & Review Count --------------------------------------
+  src\scraper_flipkart.py:180: U+2500 (-)
+        # -- Seller / Fulfilled -----------------------------------------------
+  src\scraper_flipkart.py:186: U+2500 (-)
+        # -- Delivery ---------------------------------------------------------
+  src\scraper_flipkart.py:198: U+2500 (-)
+        # -- Sponsored --------------------------------------------------------
+  src\scraper_flipkart.py:202: U+2500 (-)
+        # -- Promotional Badges -----------------------------------------------
+  src\scraper_flipkart.py:221: U+2500 (-)
+        # -- Scarcity Messages ------------------------------------------------
+  src\scraper_flipkart.py:238: U+2500 (-)
+        # -- Coupons & Offers -------------------------------------------------
+  src\scraper_flipkart.py:246: U+2500 (-)
+        # -- Return Policy ----------------------------------------------------
+  src\scraper_snapdeal.py:90: U+2500 (-)
+        # -- Title & URL ------------------------------------------------------
+  src\scraper_snapdeal.py:103: U+2500 (-)
+        # -- Prices -----------------------------------------------------------
+  src\scraper_snapdeal.py:114: U+2500 (-)
+        # -- Discount ---------------------------------------------------------
+  src\scraper_snapdeal.py:128: U+2500 (-)
+        # -- Rating & Rating Count --------------------------------------------
+  src\scraper_snapdeal.py:146: U+2500 (-)
+        # -- Badges & Scarcity ------------------------------------------------
+  src\scrape_all.py:83: U+2500 (-)
+        # -- Step 1: Scrape Amazon India --------------------------------------
+  src\scrape_all.py:94: U+2500 (-)
+        # -- Step 2: Scrape Flipkart via Selenium Headless Chrome -------------
+  src\scrape_all.py:105: U+2500 (-)
+        # -- Step 3: Scrape Snapdeal ------------------------------------------
+  src\scrape_all.py:116: U+2500 (-)
+        # -- Step 4: Merge and Validate ---------------------------------------

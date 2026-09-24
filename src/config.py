@@ -5,7 +5,7 @@ All scraping targets, thresholds, and paths in one place.
 
 import os
 
-# ─── Project Paths ──────────────────────────────────────────────────────────────
+# --- Project Paths --------------------------------------------------------------
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(SRC_DIR)  # Project root (parent of src/)
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -18,7 +18,7 @@ MODEL_DIR = os.path.join(OUTPUT_DIR, "model_results")
 for d in [RAW_DIR, CHARTS_DIR, MODEL_DIR]:
     os.makedirs(d, exist_ok=True)
 
-# ─── Scraping Configuration ─────────────────────────────────────────────────────
+# --- Scraping Configuration -----------------------------------------------------
 
 # Categories prone to dark patterns (high discount inflation, fake urgency, etc.)
 CATEGORIES = {
@@ -51,10 +51,10 @@ CATEGORIES = {
 # Number of search result pages to scrape per category per platform
 PAGES_PER_CATEGORY = 2
 
-# Listings target per platform (~250 each → ~500 total)
+# Listings target per platform (~250 each -> ~500 total)
 TARGET_PER_PLATFORM = 250
 
-# Delay between HTTP requests (seconds) — polite scraping
+# Delay between HTTP requests (seconds) -- polite scraping
 MIN_DELAY = 1.5
 MAX_DELAY = 3.5
 
@@ -75,33 +75,33 @@ BASE_HEADERS = {
     "Upgrade-Insecure-Requests": "1",
 }
 
-# ─── Flipkart Specific ──────────────────────────────────────────────────────────
+# --- Flipkart Specific ----------------------------------------------------------
 FLIPKART_BASE_URL = "https://www.flipkart.com/search"
 FLIPKART_RAW_CSV = os.path.join(RAW_DIR, "flipkart_raw.csv")
 
-# ─── Amazon Specific ────────────────────────────────────────────────────────────
+# --- Amazon Specific ------------------------------------------------------------
 AMAZON_BASE_URL = "https://www.amazon.in/s"
 AMAZON_RAW_CSV = os.path.join(RAW_DIR, "amazon_raw.csv")
 
-# ─── Snapdeal Specific (Method 4) ───────────────────────────────────────────────
+# --- Snapdeal Specific (Method 4) -----------------------------------------------
 SNAPDEAL_BASE_URL = "https://www.snapdeal.com/search"
 SNAPDEAL_RAW_CSV = os.path.join(RAW_DIR, "snapdeal_raw.csv")
 
-# ─── Merged / Processed Data ────────────────────────────────────────────────────
+# --- Merged / Processed Data ----------------------------------------------------
 RAW_MERGED_CSV = os.path.join(DATA_DIR, "raw_merged.csv")
 PROCESSED_CSV = os.path.join(DATA_DIR, "processed_listings.csv")
 LABELED_CSV = os.path.join(DATA_DIR, "labeled_listings.csv")
 FINAL_LABELED_CSV = os.path.join(DATA_DIR, "final_labeled_listings.csv")
 
-# ─── Labeling Thresholds ────────────────────────────────────────────────────────
+# --- Labeling Thresholds --------------------------------------------------------
 # These rules define automatic labeling for clear-cut cases
 
-# HIGH RISK if ≥ HIGH_RISK_MIN_FLAGS of these are true:
+# HIGH RISK if >= HIGH_RISK_MIN_FLAGS of these are true:
 HIGH_RISK_MIN_FLAGS = 3
 HIGH_RISK_RULES = {
     "extreme_discount": 70,          # Discount >= 70%
     "has_scarcity_message": True,     # "Only X left", "Hurry", etc.
-    "promotional_badge_count": 2,     # ≥2 promotional badges
+    "promotional_badge_count": 2,     # >=2 promotional badges
     "is_sponsored": True,            # Paid placement
     "has_coupon": True,              # Coupon stacking on top of discount
     "no_return_policy": True,        # No returns = red flag
@@ -111,25 +111,25 @@ HIGH_RISK_RULES = {
     },
 }
 
-# LOW RISK — all of these must hold:
+# LOW RISK -- all of these must hold:
 LOW_RISK_RULES = {
-    "max_discount": 30,              # Discount ≤ 30%
-    "min_rating": 4.0,               # Rating ≥ 4.0
+    "max_discount": 30,              # Discount <= 30%
+    "min_rating": 4.0,               # Rating >= 4.0
     "min_ratings_count": 100,        # At least 100 ratings
     "has_return_policy": True,       # Returns allowed
-    "max_promotional_cues": 1,       # ≤1 promotional element
+    "max_promotional_cues": 1,       # <=1 promotional element
     "no_scarcity_message": True,     # No urgency messaging
 }
 
-# Everything else → MEDIUM (flagged for manual review)
+# Everything else -> MEDIUM (flagged for manual review)
 
-# ─── Model Training ─────────────────────────────────────────────────────────────
+# --- Model Training -------------------------------------------------------------
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 CV_FOLDS = 5
 BEST_MODEL_PATH = os.path.join(MODEL_DIR, "best_model.joblib")
 
-# ─── Feature Columns (used in model training) ───────────────────────────────────
+# --- Feature Columns (used in model training) -----------------------------------
 FEATURE_COLUMNS = [
     "selling_price",
     "original_price",

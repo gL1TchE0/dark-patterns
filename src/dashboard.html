@@ -37,7 +37,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── Glassmorphism Background Orbs ───────────────────────────── */
+        /* -- Glassmorphism Background Orbs ----------------------------- */
         .bg-gradient {
             position: fixed;
             top: 0;
@@ -87,7 +87,7 @@
             100% { transform: translate(-80px, -60px) scale(1.2); }
         }
 
-        /* ── Header ──────────────────────────────────────────────────── */
+        /* -- Header ---------------------------------------------------- */
         .header {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(24px);
@@ -151,14 +151,14 @@
             margin-top: 6px;
         }
 
-        /* ── Main Container ──────────────────────────────────────────── */
+        /* -- Main Container -------------------------------------------- */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px 40px;
         }
 
-        /* ── Glass Cards Base ────────────────────────────────────────── */
+        /* -- Glass Cards Base ------------------------------------------ */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
@@ -175,7 +175,7 @@
             transform: translateY(-2px);
         }
 
-        /* ── KPI Cards ───────────────────────────────────────────────── */
+        /* -- KPI Cards ------------------------------------------------- */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -214,7 +214,7 @@
             color: var(--text-muted);
         }
 
-        /* ── Section / Chart Cards ───────────────────────────────────── */
+        /* -- Section / Chart Cards ------------------------------------- */
         .section-title {
             font-size: 1.1rem;
             font-weight: 400;
@@ -271,7 +271,7 @@
             height: 400px;
         }
 
-        /* ── Data Table ──────────────────────────────────────────────── */
+        /* -- Data Table ------------------------------------------------ */
         .table-container {
             overflow: hidden;
             margin-bottom: 40px;
@@ -329,7 +329,7 @@
         .badge-high { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; border-color: rgba(255, 255, 255, 0.4); box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
         .badge-best { background: rgba(255, 255, 255, 0.15); color: #FFFFFF; border-color: rgba(255, 255, 255, 0.5); }
 
-        /* ── Recommendations ──────────────────────────────────────────── */
+        /* -- Recommendations -------------------------------------------- */
         .rec-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -368,7 +368,7 @@
             line-height: 1.7;
         }
 
-        /* ── Footer ──────────────────────────────────────────────────── */
+        /* -- Footer ---------------------------------------------------- */
         .footer {
             text-align: center;
             padding: 40px;
@@ -380,7 +380,7 @@
             margin-top: 60px;
         }
 
-        /* ── Loading animation ──────────────────────────────────────── */
+        /* -- Loading animation ---------------------------------------- */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -422,7 +422,7 @@
             text-transform: uppercase;
         }
 
-        /* ── Responsive ──────────────────────────────────────────────── */
+        /* -- Responsive ------------------------------------------------ */
         @media (max-width: 900px) {
             .container { padding: 24px; }
             .header { padding: 20px 24px; }
@@ -451,7 +451,7 @@
         <div class="header-inner">
             <div>
                 <h1>Dark Patterns Analytics Dashboard</h1>
-                <div class="header-meta">E-Commerce Manipulative Pricing & Scarcity Detection | BALAJI N — CB.SC.U4CSE23011</div>
+                <div class="header-meta">E-Commerce Manipulative Pricing & Scarcity Detection | BALAJI N -- CB.SC.U4CSE23011</div>
             </div>
             <div class="header-badge">LIVE ANALYSIS</div>
         </div>
@@ -491,13 +491,13 @@
         <div class="section-title">Risk Level Analysis</div>
         <div class="chart-grid">
             <div class="chart-card glass-card">
-                <div class="chart-title"><span class="icon">📊</span> Risk Level Distribution</div>
+                <div class="chart-title"><span class="icon"></span> Risk Level Distribution</div>
                 <div class="chart-container">
                     <canvas id="riskDistChart"></canvas>
                 </div>
             </div>
             <div class="chart-card glass-card">
-                <div class="chart-title"><span class="icon">🍩</span> Risk Proportions</div>
+                <div class="chart-title"><span class="icon"></span> Risk Proportions</div>
                 <div class="chart-container">
                     <canvas id="riskPieChart"></canvas>
                 </div>
@@ -508,13 +508,13 @@
         <div class="section-title">Platform & Category Breakdown</div>
         <div class="chart-grid">
             <div class="chart-card glass-card">
-                <div class="chart-title"><span class="icon">🏪</span> Risk by Platform</div>
+                <div class="chart-title"><span class="icon"></span> Risk by Platform</div>
                 <div class="chart-container">
                     <canvas id="platformChart"></canvas>
                 </div>
             </div>
             <div class="chart-card glass-card">
-                <div class="chart-title"><span class="icon">📁</span> Risk by Category</div>
+                <div class="chart-title"><span class="icon"></span> Risk by Category</div>
                 <div class="chart-container">
                     <canvas id="categoryChart"></canvas>
                 </div>
@@ -525,13 +525,13 @@
         <div class="section-title">Feature Analysis</div>
         <div class="chart-grid">
             <div class="chart-card glass-card">
-                <div class="chart-title"><span class="icon">💰</span> Discount Distribution by Risk</div>
+                <div class="chart-title"><span class="icon"></span> Discount Distribution by Risk</div>
                 <div class="chart-container tall">
                     <canvas id="discountChart"></canvas>
                 </div>
             </div>
             <div class="chart-card glass-card">
-                <div class="chart-title"><span class="icon">⚡</span> Promotional Intensity by Risk</div>
+                <div class="chart-title"><span class="icon"></span> Promotional Intensity by Risk</div>
                 <div class="chart-container tall">
                     <canvas id="promoChart"></canvas>
                 </div>
@@ -540,7 +540,7 @@
 
         <div class="chart-grid single">
             <div class="chart-card glass-card full-width">
-                <div class="chart-title"><span class="icon">📈</span> Dark Pattern Signal Comparison: High vs Low Risk</div>
+                <div class="chart-title"><span class="icon"></span> Dark Pattern Signal Comparison: High vs Low Risk</div>
                 <div class="chart-container tall">
                     <canvas id="signalRadarChart"></canvas>
                 </div>
@@ -551,7 +551,7 @@
         <div class="section-title">Model Performance</div>
         <div class="chart-grid single">
             <div class="chart-card glass-card full-width">
-                <div class="chart-title"><span class="icon">🤖</span> Model Comparison — Performance Metrics</div>
+                <div class="chart-title"><span class="icon"></span> Model Comparison -- Performance Metrics</div>
                 <div class="chart-container tall">
                     <canvas id="modelCompChart"></canvas>
                 </div>
@@ -566,7 +566,7 @@
         <!-- Feature Importance -->
         <div class="chart-grid single">
             <div class="chart-card glass-card full-width">
-                <div class="chart-title"><span class="icon">🎯</span> Feature Importance — Best Model</div>
+                <div class="chart-title"><span class="icon"></span> Feature Importance -- Best Model</div>
                 <div class="chart-container tall">
                     <canvas id="featureImpChart"></canvas>
                 </div>
@@ -582,7 +582,7 @@
             </div>
             <div class="rec-card glass-card" data-number="2">
                 <h3>Discount Cap Alerts</h3>
-                <p>Listings with >70% discount + low reviews (&lt;50) should trigger automatic review — strongest manipulation signal.</p>
+                <p>Listings with >70% discount + low reviews (&lt;50) should trigger automatic review -- strongest manipulation signal.</p>
             </div>
             <div class="rec-card glass-card" data-number="3">
                 <h3>Scarcity Message Audit</h3>
@@ -590,7 +590,7 @@
             </div>
             <div class="rec-card glass-card" data-number="4">
                 <h3>Coupon Stacking Rules</h3>
-                <p>Limit coupon stacking on heavily-discounted items — a common deception technique to create false value perception.</p>
+                <p>Limit coupon stacking on heavily-discounted items -- a common deception technique to create false value perception.</p>
             </div>
             <div class="rec-card glass-card" data-number="5">
                 <h3>Seller Risk Scoring</h3>
@@ -608,10 +608,10 @@
     </footer>
 
     <script>
-    // ═══════════════════════════════════════════════════════════════
+    // ===============================================================
     // Dashboard Data & Rendering
     // Reads from data files or uses embedded defaults
-    // ═══════════════════════════════════════════════════════════════
+    // ===============================================================
 
     // Chart.js global config
     Chart.defaults.color = '#A1A1AA';
@@ -631,7 +631,7 @@
             highBg: 'rgba(255, 255, 255, 0.15)',
         };
 
-    // ── Try loading data from CSV/JSON, otherwise use defaults ─────
+    // -- Try loading data from CSV/JSON, otherwise use defaults -----
     async function loadData() {
         let dashboardData;
 
@@ -825,7 +825,7 @@
         };
     }
 
-    // ── Render functions ────────────────────────────────────────────
+    // -- Render functions --------------------------------------------
     function renderKPIs(d) {
         document.getElementById('kpiTotal').textContent = d.total.toLocaleString();
         document.getElementById('kpiHighRisk').textContent = d.riskCounts.High;
@@ -1075,7 +1075,7 @@
                 <td>${(m.recall * 100).toFixed(2)}%</td>
                 <td>${(m.f1 * 100).toFixed(2)}%</td>
                 <td>${m.roc_auc ? (m.roc_auc * 100).toFixed(2) + '%' : 'N/A'}</td>
-                <td>${isBest ? '<span class="badge badge-best">★ BEST</span>' : ''}</td>
+                <td>${isBest ? '<span class="badge badge-best">* BEST</span>' : ''}</td>
             </tr>`;
         });
         html += '</tbody></table>';
@@ -1111,7 +1111,7 @@
         });
     }
 
-    // ── Initialize ──────────────────────────────────────────────────
+    // -- Initialize --------------------------------------------------
     async function init() {
         const data = await loadData();
 

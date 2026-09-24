@@ -25,14 +25,14 @@ def load_raw_data():
 
 def clean_data(df):
     """Clean and standardize raw data."""
-    print("\n── Data Cleaning ──────────────────────────────────────────")
+    print("\n-- Data Cleaning ------------------------------------------")
     initial = len(df)
 
-    # ── Drop duplicates ──────────────────────────────────────────────────
+    # -- Drop duplicates --------------------------------------------------
     df = df.drop_duplicates(subset=["product_name", "platform", "selling_price"], keep="first")
-    print(f"  Removed {initial - len(df)} duplicates → {len(df)} records")
+    print(f"  Removed {initial - len(df)} duplicates -> {len(df)} records")
 
-    # ── Handle missing prices ────────────────────────────────────────────
+    # -- Handle missing prices --------------------------------------------
     # Drop rows with no selling price (useless)
     df = df.dropna(subset=["selling_price"])
     df["selling_price"] = pd.to_numeric(df["selling_price"], errors="coerce")
@@ -52,7 +52,7 @@ def clean_data(df):
     # Ensure original >= selling
     df.loc[df["original_price"] < df["selling_price"], "original_price"] = df["selling_price"]
 
-    # ── Recompute discount if missing ────────────────────────────────────
+    # -- Recompute discount if missing ------------------------------------
     df["discount_percentage"] = pd.to_numeric(df["discount_percentage"], errors="coerce")
     mask_no_discount = df["discount_percentage"].isna()
     df.loc[mask_no_discount, "discount_percentage"] = np.where(
@@ -62,7 +62,7 @@ def clean_data(df):
     )
     df["discount_percentage"] = df["discount_percentage"].clip(0, 100)
 
-    # ── Numeric fields ───────────────────────────────────────────────────
+    # -- Numeric fields ---------------------------------------------------
     for col in ["rating", "rating_count", "review_count", "delivery_days", "promotional_badge_count"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
@@ -73,7 +73,7 @@ def clean_data(df):
     df["delivery_days"] = df["delivery_days"].fillna(df["delivery_days"].median())
     df["promotional_badge_count"] = df["promotional_badge_count"].fillna(0).astype(int)
 
-    # ── Boolean fields ───────────────────────────────────────────────────
+    # -- Boolean fields ---------------------------------------------------
     bool_cols = ["free_delivery", "is_sponsored", "has_scarcity_message", "has_coupon", "has_return_policy"]
     for col in bool_cols:
         df[col] = df[col].fillna(False).astype(bool).astype(int)
@@ -86,9 +86,9 @@ def engineer_features(df):
     """
     Engineer derived features that capture dark-pattern signals.
     """
-    print("\n── Feature Engineering ─────────────────────────────────────")
+    print("\n-- Feature Engineering -------------------------------------")
 
-    # ── 1. Promotional Intensity ─────────────────────────────────────────
+    # -- 1. Promotional Intensity -----------------------------------------
     # Count of simultaneous promotional cues (badges + coupon + scarcity + sponsored)
     df["promotional_intensity"] = (
         df["promotional_badge_count"]
@@ -96,9 +96,9 @@ def engineer_features(df):
         + df["has_scarcity_message"].astype(int)
         + df["is_sponsored"].astype(int)
     )
-    print("  ✓ promotional_intensity (sum of all promotional cues)")
+    print("  [OK] promotional_intensity (sum of all promotional cues)")
 
-    # ── 2. Price-Rating Mismatch ─────────────────────────────────────────
+    # -- 2. Price-Rating Mismatch -----------------------------------------
     # High discount + low rating = suspicious.
     # Scale: 0 = no mismatch, higher = more suspicious
     df["price_rating_mismatch"] = np.where(
@@ -107,9 +107,9 @@ def engineer_features(df):
         df["discount_percentage"] / 100,
     )
     df["price_rating_mismatch"] = df["price_rating_mismatch"].round(3)
-    print("  ✓ price_rating_mismatch (discount × inverse rating)")
+    print("  [OK] price_rating_mismatch (discount x inverse rating)")
 
-    # ── 3. Review-to-Rating Ratio ────────────────────────────────────────
+    # -- 3. Review-to-Rating Ratio ----------------------------------------
     # Products with very few reviews relative to ratings may have fake ratings
     df["review_to_rating_ratio"] = np.where(
         df["rating_count"] > 0,
@@ -117,9 +117,9 @@ def engineer_features(df):
         0,
     )
     df["review_to_rating_ratio"] = df["review_to_rating_ratio"].round(3)
-    print("  ✓ review_to_rating_ratio (reviews / ratings, clipped 0-1)")
+    print("  [OK] review_to_rating_ratio (reviews / ratings, clipped 0-1)")
 
-    # ── 4. Urgency Score ─────────────────────────────────────────────────
+    # -- 4. Urgency Score -------------------------------------------------
     # Composite: scarcity message + extreme discount + limited delivery
     df["urgency_score"] = (
         df["has_scarcity_message"].astype(int) * 3          # Scarcity is strongest signal
@@ -127,9 +127,9 @@ def engineer_features(df):
         + (df["has_coupon"]).astype(int) * 1                 # Coupon stacking
         + (df["delivery_days"].fillna(99) <= 1).astype(int) * 1  # Rush delivery
     )
-    print("  ✓ urgency_score (weighted: scarcity×3 + extreme_discount×2 + coupon + rush_delivery)")
+    print("  [OK] urgency_score (weighted: scarcityx3 + extreme_discountx2 + coupon + rush_delivery)")
 
-    # ── 5. Trust Score ───────────────────────────────────────────────────
+    # -- 5. Trust Score ---------------------------------------------------
     # Higher = more trustworthy listing. Inverse signal to manipulation.
     df["trust_score"] = (
         (df["rating"] / 5) * 2                              # Good rating
@@ -140,7 +140,7 @@ def engineer_features(df):
         - (df["discount_percentage"] > 70).astype(int) * 1   # Extreme discount = less trust
     )
     df["trust_score"] = df["trust_score"].round(3)
-    print("  ✓ trust_score (composite: rating, reviews, returns, minus suspicion)")
+    print("  [OK] trust_score (composite: rating, reviews, returns, minus suspicion)")
 
     print(f"\n  Final feature set: {len(df.columns)} columns")
     return df
@@ -148,19 +148,19 @@ def engineer_features(df):
 
 def main():
     """Run the full preprocessing pipeline."""
-    print("╔══════════════════════════════════════════════════════════╗")
-    print("║  Data Preprocessing & Feature Engineering                ║")
-    print("╚══════════════════════════════════════════════════════════╝\n")
+    print("+==========================================================+")
+    print("|  Data Preprocessing & Feature Engineering                |")
+    print("+==========================================================+\n")
 
     df = load_raw_data()
     df = clean_data(df)
     df = engineer_features(df)
 
-    # ── Save processed data ──────────────────────────────────────────────
+    # -- Save processed data ----------------------------------------------
     df.to_csv(config.PROCESSED_CSV, index=False)
-    print(f"\n✓ Processed data saved to {config.PROCESSED_CSV}")
+    print(f"\n[OK] Processed data saved to {config.PROCESSED_CSV}")
 
-    # ── Quick summary stats ──────────────────────────────────────────────
+    # -- Quick summary stats ----------------------------------------------
     print(f"\n{'=' * 60}")
     print("PREPROCESSING SUMMARY")
     print(f"{'=' * 60}")

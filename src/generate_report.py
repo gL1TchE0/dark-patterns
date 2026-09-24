@@ -20,11 +20,11 @@ import config
 
 def generate_report():
     """Generate the final analytics report."""
-    print("╔══════════════════════════════════════════════════════════╗")
-    print("║  Generating Analytics Report                             ║")
-    print("╚══════════════════════════════════════════════════════════╝\n")
+    print("+==========================================================+")
+    print("|  Generating Analytics Report                             |")
+    print("+==========================================================+\n")
 
-    # ── Load data ────────────────────────────────────────────────────────
+    # -- Load data --------------------------------------------------------
     df = pd.read_csv(config.FINAL_LABELED_CSV)
 
     # Load model metrics
@@ -36,16 +36,16 @@ def generate_report():
     best_model_name = max(model_metrics, key=lambda k: model_metrics[k]["f1_weighted"])
     best = model_metrics[best_model_name]
 
-    # ── Build report ─────────────────────────────────────────────────────
+    # -- Build report -----------------------------------------------------
     report = []
     report.append("# Business Analytics Report")
     report.append("## Identifying Manipulative Pricing & Scarcity Strategies in E-Commerce\n")
     report.append(f"**Student:** BALAJI N (CB.SC.U4CSE23011)")
-    report.append(f"**Course:** Business Analytics — 23CSE452")
+    report.append(f"**Course:** Business Analytics -- 23CSE452")
     report.append(f"**Domain:** E-Commerce Dark Patterns Detection\n")
     report.append("---\n")
 
-    # ── 1. Executive Summary ─────────────────────────────────────────────
+    # -- 1. Executive Summary ---------------------------------------------
     report.append("## 1. Executive Summary\n")
     total = len(df)
     high_count = (df["manipulation_risk"] == "High").sum()
@@ -57,7 +57,7 @@ def generate_report():
     report.append(f"The best-performing model was **{best_model_name}** with a weighted F1-score of ")
     report.append(f"**{best['f1_weighted']:.4f}** and accuracy of **{best['accuracy']:.4f}**.\n")
 
-    # ── 2. Dataset Overview ──────────────────────────────────────────────
+    # -- 2. Dataset Overview ----------------------------------------------
     report.append("## 2. Dataset Overview\n")
     report.append(f"| Metric | Value |")
     report.append(f"|--------|-------|")
@@ -78,7 +78,7 @@ def generate_report():
         report.append(f"| {risk} | {count} | {pct:.1f}% |")
     report.append("")
 
-    # ── 3. Key Findings ──────────────────────────────────────────────────
+    # -- 3. Key Findings --------------------------------------------------
     report.append("## 3. Key Findings\n")
 
     # Dark pattern prevalence by category
@@ -124,13 +124,13 @@ def generate_report():
         report.append(f"| {sig_name} | {high_val:.1f}% | {low_val:.1f}% | +{diff:.1f}pp |")
     report.append("")
 
-    # ── 4. Model Performance ─────────────────────────────────────────────
+    # -- 4. Model Performance ---------------------------------------------
     report.append("## 4. Model Performance\n")
     report.append("### Model Comparison\n")
     report.append("| Model | Accuracy | Precision | Recall | F1 (weighted) | ROC-AUC |")
     report.append("|-------|----------|-----------|--------|---------------|---------|")
     for name, metrics in model_metrics.items():
-        star = " ★" if name == best_model_name else ""
+        star = " *" if name == best_model_name else ""
         roc = f"{metrics['roc_auc']:.4f}" if metrics['roc_auc'] else "N/A"
         report.append(
             f"| {name}{star} | {metrics['accuracy']:.4f} | {metrics['precision']:.4f} | "
@@ -142,31 +142,31 @@ def generate_report():
     report.append(f"**Rationale:** Highest weighted F1-score ({best['f1_weighted']:.4f}), ")
     report.append(f"which balances precision and recall across all risk classes.\n")
 
-    # ── 5. Recommendations ───────────────────────────────────────────────
+    # -- 5. Recommendations -----------------------------------------------
     report.append("## 5. Business Recommendations\n")
     report.append("Based on our analysis, we recommend the following actions for marketplace moderation teams:\n")
     report.append("1. **Automated Flagging**: Deploy the trained model to automatically flag high-risk listings for manual review, reducing moderation workload by ~60-70%.\n")
-    report.append("2. **Discount Cap Alerts**: Listings with >70% discount combined with low review counts (<50) should trigger automatic review — these show the strongest manipulation signal.\n")
+    report.append("2. **Discount Cap Alerts**: Listings with >70% discount combined with low review counts (<50) should trigger automatic review -- these show the strongest manipulation signal.\n")
     report.append("3. **Scarcity Message Audit**: Scarcity messages (\"Only X left\") are the single strongest predictor of manipulation when combined with extreme discounts. Platforms should verify stock claims.\n")
     report.append("4. **Coupon Stacking Rules**: Implement rules to limit coupon stacking on already heavily-discounted items, which is a common deception technique.\n")
-    report.append("5. **Seller Accountability**: Track manipulation risk scores per seller — repeat offenders can be flagged for policy review.\n")
+    report.append("5. **Seller Accountability**: Track manipulation risk scores per seller -- repeat offenders can be flagged for policy review.\n")
     report.append("6. **Category-Specific Monitoring**: Focus moderation resources on categories with highest dark pattern prevalence (identified in Section 3.1).\n")
 
-    # ── 6. Methodology ──────────────────────────────────────────────────
+    # -- 6. Methodology --------------------------------------------------
     report.append("## 6. Methodology Summary\n")
     report.append("1. **Data Collection**: Web scraping from Flipkart and Amazon India using Python (requests + BeautifulSoup)\n")
     report.append("2. **Feature Engineering**: 18 features including 5 derived composite scores (promotional_intensity, price_rating_mismatch, review_to_rating_ratio, urgency_score, trust_score)\n")
-    report.append("3. **Labeling**: Semi-automated approach — clear High/Low cases labeled by business rules, Medium cases resolved by composite scoring heuristic\n")
+    report.append("3. **Labeling**: Semi-automated approach -- clear High/Low cases labeled by business rules, Medium cases resolved by composite scoring heuristic\n")
     report.append("4. **Modeling**: 4 classifiers trained with GridSearchCV hyperparameter tuning (5-fold stratified CV)\n")
     report.append("5. **Evaluation**: Compared on Accuracy, Precision, Recall, F1, and ROC-AUC; best model selected by weighted F1\n")
 
-    # ── Write report ─────────────────────────────────────────────────────
+    # -- Write report -----------------------------------------------------
     report_text = "\n".join(report)
     report_path = os.path.join(config.SRC_DIR, "REPORT.md")
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_text)
 
-    print(f"\n✓ Report saved to {report_path}")
+    print(f"\n[OK] Report saved to {report_path}")
     print(f"  Sections: Executive Summary, Dataset, Key Findings, Model Performance, Recommendations, Methodology")
 
     return report_path

@@ -44,7 +44,7 @@ def get_driver():
 
 
 def extract_price(text):
-    """Extract numeric price from text like '₹1,299' → 1299.0"""
+    """Extract numeric price from text like '₹1,299' -> 1299.0"""
     if not text:
         return None
     text = text.replace('Rs.', '').replace('Rs', '').replace(',', '').replace('₹', '').strip()
@@ -56,7 +56,7 @@ def extract_price(text):
 
 
 def extract_number(text):
-    """Extract integer number from text like '1,234' → 1234"""
+    """Extract integer number from text like '1,234' -> 1234"""
     if not text:
         return 0
     nums = re.sub(r"[^\d]", "", text.replace(",", ""))
@@ -98,14 +98,14 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
         "product_url": "",
     }
 
-    # ── Product URL ──────────────────────────────────────────────────────
+    # -- Product URL ------------------------------------------------------
     href = link_tag.get("href", "")
     if href.startswith("/"):
         listing["product_url"] = "https://www.flipkart.com" + href.split("?")[0]
     else:
         listing["product_url"] = href.split("?")[0]
 
-    # ── Product Name ─────────────────────────────────────────────────────
+    # -- Product Name -----------------------------------------------------
     # Check link title or link text
     title = link_tag.get("title", "").strip()
     if not title:
@@ -126,7 +126,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
 
     listing["product_name"] = title if title else "Flipkart Product"
 
-    # ── Prices ───────────────────────────────────────────────────────────
+    # -- Prices -----------------------------------------------------------
     price_matches = re.findall(r"₹\s*([\d,]+)", text_content)
     prices = []
     for pm in price_matches:
@@ -141,7 +141,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
         listing["selling_price"] = prices[0]
         listing["original_price"] = prices[0]
 
-    # ── Discount Percentage ──────────────────────────────────────────────
+    # -- Discount Percentage ----------------------------------------------
     disc_match = re.search(r"(\d{1,2})%\s*off", text_content, re.IGNORECASE)
     if disc_match:
         listing["discount_percentage"] = float(disc_match.group(1))
@@ -152,7 +152,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
     else:
         listing["discount_percentage"] = 0.0
 
-    # ── Rating ───────────────────────────────────────────────────────────
+    # -- Rating -----------------------------------------------------------
     # Flipkart shows ratings as "4.2" or "4.2 ★"
     rating_match = re.search(r"\b([1-5]\.\d)\b", text_content)
     if rating_match:
@@ -164,7 +164,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
         else:
             listing["rating"] = 4.0  # default median
 
-    # ── Rating Count & Review Count ──────────────────────────────────────
+    # -- Rating Count & Review Count --------------------------------------
     rc_match = re.search(r"([\d,]+)\s*ratings?", all_text)
     if rc_match:
         listing["rating_count"] = extract_number(rc_match.group(1))
@@ -177,13 +177,13 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
     else:
         listing["review_count"] = int(listing["rating_count"] * 0.2)
 
-    # ── Seller / Fulfilled ───────────────────────────────────────────────
+    # -- Seller / Fulfilled -----------------------------------------------
     if "assured" in all_text or "f-assured" in all_text or "plus" in all_text:
         listing["seller_type"] = "Marketplace Fulfilled"
     else:
         listing["seller_type"] = "Third-party"
 
-    # ── Delivery ─────────────────────────────────────────────────────────
+    # -- Delivery ---------------------------------------------------------
     if "free delivery" in all_text or "free" in all_text:
         listing["free_delivery"] = True
         listing["delivery_info"] = "Free Delivery"
@@ -195,11 +195,11 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
     else:
         listing["delivery_days"] = 3
 
-    # ── Sponsored ────────────────────────────────────────────────────────
+    # -- Sponsored --------------------------------------------------------
     if "ad" == text_content.split("|")[0].strip().lower() or "sponsored" in all_text:
         listing["is_sponsored"] = True
 
-    # ── Promotional Badges ───────────────────────────────────────────────
+    # -- Promotional Badges -----------------------------------------------
     badges = []
     badge_checks = [
         ("bestseller", "Bestseller"),
@@ -218,7 +218,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
     listing["promotional_badges"] = "; ".join(badges)
     listing["promotional_badge_count"] = len(badges)
 
-    # ── Scarcity Messages ────────────────────────────────────────────────
+    # -- Scarcity Messages ------------------------------------------------
     scarcity_cues = [
         "only few left",
         "only 1 left",
@@ -235,7 +235,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
             listing["scarcity_message"] = sc.title()
             break
 
-    # ── Coupons & Offers ─────────────────────────────────────────────────
+    # -- Coupons & Offers -------------------------------------------------
     coupon_cues = ["coupon", "extra ₹", "extra %", "bank offer", "save extra"]
     for cc in coupon_cues:
         if cc in all_text:
@@ -243,7 +243,7 @@ def parse_single_flipkart_card(link_tag, container_tag, category):
             listing["coupon_text"] = "Bank/Coupon Offer Available"
             break
 
-    # ── Return Policy ────────────────────────────────────────────────────
+    # -- Return Policy ----------------------------------------------------
     if "non-returnable" in all_text or "no return" in all_text:
         listing["has_return_policy"] = False
         listing["return_policy"] = "Non-returnable"
@@ -318,7 +318,7 @@ def scrape_flipkart(driver=None):
     try:
         for cat_name, cat_config in config.CATEGORIES.items():
             query = cat_config["flipkart_query"]
-            print(f"\n📦 Category: {cat_name} | Query: '{query}'")
+            print(f"\n Category: {cat_name} | Query: '{query}'")
             print("-" * 40)
 
             for page_num in range(1, config.PAGES_PER_CATEGORY + 1):
@@ -336,17 +336,17 @@ def scrape_flipkart(driver=None):
 
                     html = driver.page_source
                     page_listings = parse_flipkart_page(html, cat_name)
-                    print(f"  ✓ Extracted {len(page_listings)} listings from page {page_num}")
+                    print(f"  [OK] Extracted {len(page_listings)} listings from page {page_num}")
                     all_listings.extend(page_listings)
 
                 except Exception as e:
-                    print(f"  ✗ Error fetching page {page_num}: {e}")
+                    print(f"  [FAIL] Error fetching page {page_num}: {e}")
                     time.sleep(2.0)
 
                 time.sleep(random.uniform(config.MIN_DELAY, config.MAX_DELAY))
 
                 if len(all_listings) >= config.TARGET_PER_PLATFORM:
-                    print(f"\n  ✓ Reached target ({config.TARGET_PER_PLATFORM} listings)")
+                    print(f"\n  [OK] Reached target ({config.TARGET_PER_PLATFORM} listings)")
                     break
 
             if len(all_listings) >= config.TARGET_PER_PLATFORM:
@@ -360,9 +360,9 @@ def scrape_flipkart(driver=None):
     # Save to CSV
     if all_listings:
         save_to_csv(all_listings, config.FLIPKART_RAW_CSV)
-        print(f"\n✓ Saved {len(all_listings)} Flipkart listings to {config.FLIPKART_RAW_CSV}")
+        print(f"\n[OK] Saved {len(all_listings)} Flipkart listings to {config.FLIPKART_RAW_CSV}")
     else:
-        print("\n✗ No listings scraped from Flipkart")
+        print("\n[FAIL] No listings scraped from Flipkart")
 
     return all_listings
 

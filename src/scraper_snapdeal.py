@@ -32,7 +32,7 @@ def get_session():
 
 
 def extract_price(text):
-    """Extract numeric price from text like 'Rs. 1,299' → 1299.0"""
+    """Extract numeric price from text like 'Rs. 1,299' -> 1299.0"""
     if not text:
         return None
     # Remove Rs. and commas before doing strict digit/dot extraction
@@ -87,7 +87,7 @@ def parse_single_snapdeal_card(card, category):
         "product_url": "",
     }
 
-    # ── Title & URL ──────────────────────────────────────────────────────
+    # -- Title & URL ------------------------------------------------------
     title_el = card.find("p", class_="product-title")
     if title_el:
         listing["product_name"] = title_el.get_text(strip=True)
@@ -100,7 +100,7 @@ def parse_single_snapdeal_card(card, category):
         else:
             listing["product_url"] = href.split("?")[0]
 
-    # ── Prices ───────────────────────────────────────────────────────────
+    # -- Prices -----------------------------------------------------------
     price_el = card.find("span", class_="product-price")
     if price_el:
         listing["selling_price"] = extract_price(price_el.get_text())
@@ -111,7 +111,7 @@ def parse_single_snapdeal_card(card, category):
     elif listing["selling_price"]:
         listing["original_price"] = listing["selling_price"]
 
-    # ── Discount ─────────────────────────────────────────────────────────
+    # -- Discount ---------------------------------------------------------
     disc_el = card.find("div", class_="product-discount")
     if disc_el:
         m = re.search(r"(\d{1,2})%", disc_el.get_text())
@@ -125,7 +125,7 @@ def parse_single_snapdeal_card(card, category):
     elif listing["discount_percentage"] is None:
         listing["discount_percentage"] = 0.0
 
-    # ── Rating & Rating Count ────────────────────────────────────────────
+    # -- Rating & Rating Count --------------------------------------------
     # Rating count: e.g. "(120)"
     rc_el = card.find("span", class_="product-rating-count")
     if rc_el:
@@ -143,7 +143,7 @@ def parse_single_snapdeal_card(card, category):
         if m:
             listing["rating"] = round(float(m.group(1)) / 20.0, 1)
 
-    # ── Badges & Scarcity ────────────────────────────────────────────────
+    # -- Badges & Scarcity ------------------------------------------------
     badges = []
     if listing["discount_percentage"] >= 65:
         badges.append("Great Offer")
@@ -193,7 +193,7 @@ def scrape_snapdeal(target_count=500):
     per_category = max(20, target_count // len(queries) + 10)
 
     for cat_name, q in queries:
-        print(f"\n📦 Category: {cat_name} | Query: '{q}'")
+        print(f"\n Category: {cat_name} | Query: '{q}'")
         cat_listings = []
         
         # Snapdeal uses start offset for pagination (0, 20, 40...)
@@ -204,7 +204,7 @@ def scrape_snapdeal(target_count=500):
             try:
                 resp = session.get(url, timeout=12)
                 if resp.status_code != 200:
-                    print(f"  ✗ HTTP {resp.status_code}")
+                    print(f"  [FAIL] HTTP {resp.status_code}")
                     break
 
                 soup = BeautifulSoup(resp.text, "lxml")
@@ -222,7 +222,7 @@ def scrape_snapdeal(target_count=500):
                         break
 
             except Exception as e:
-                print(f"  ✗ Error: {e}")
+                print(f"  [FAIL] Error: {e}")
                 break
 
             time.sleep(random.uniform(1.5, 2.5))
@@ -230,19 +230,19 @@ def scrape_snapdeal(target_count=500):
             if len(cat_listings) >= per_category:
                 break
                 
-        print(f"  ✓ Extracted {len(cat_listings)} valid listings")
+        print(f"  [OK] Extracted {len(cat_listings)} valid listings")
         all_listings.extend(cat_listings)
         
         if len(all_listings) >= target_count:
-            print(f"\n✓ Reached overall target of {target_count} listings.")
+            print(f"\n[OK] Reached overall target of {target_count} listings.")
             break
 
     # Save to CSV
     if all_listings:
         save_to_csv(all_listings, config.SNAPDEAL_RAW_CSV)
-        print(f"\n✓ Saved {len(all_listings)} Snapdeal listings to {config.SNAPDEAL_RAW_CSV}")
+        print(f"\n[OK] Saved {len(all_listings)} Snapdeal listings to {config.SNAPDEAL_RAW_CSV}")
     else:
-        print("\n✗ No listings scraped from Snapdeal")
+        print("\n[FAIL] No listings scraped from Snapdeal")
 
     return all_listings
 

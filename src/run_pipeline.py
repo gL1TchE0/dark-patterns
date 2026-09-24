@@ -62,14 +62,14 @@ def main():
     run_phase("Report Generation", generate_report)
 
     print("\n" + "=" * 60)
-    print("  PIPELINE COMPLETE — ALL PHASES FINISHED")
+    print("  PIPELINE COMPLETE -- ALL PHASES FINISHED")
     print("=" * 60)
     print(f"\nOutputs:")
-    print(f"  📊 Charts:     src/output/charts/")
-    print(f"  🤖 Model:      src/output/model_results/")
-    print(f"  📄 Report:     src/REPORT.md")
-    print(f"  🌐 Dashboard:  src/dashboard.html")
-    print(f"  📁 Data:       data/")
+    print(f"  Charts:     src/output/charts/")
+    print(f"  Model:      src/output/model_results/")
+    print(f"  Report:     src/REPORT.md")
+    print(f"  Dashboard:  src/dashboard.html")
+    print(f"  Data:       data/")
 
 
 if __name__ == "__main__":
