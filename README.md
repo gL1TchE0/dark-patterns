@@ -6,7 +6,7 @@
 **Course:** Business Analytics -- 23CSE452
 
 ---
-
+ 
 ##  Overview
 
 This project scrapes product listings from **Amazon India**, **Flipkart**, and **Snapdeal**, engineers features that capture dark-pattern signals (inflated discounts, fake scarcity, coupon stacking, etc.), and trains ML classifiers to flag high-risk listings automatically.

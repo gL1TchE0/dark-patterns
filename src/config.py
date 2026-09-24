@@ -3,7 +3,7 @@ Central configuration for the Dark Patterns Detection project.
 All scraping targets, thresholds, and paths in one place.
 """
 
-import os
+import os 
 
 # --- Project Paths --------------------------------------------------------------
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))

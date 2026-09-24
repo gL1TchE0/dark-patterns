@@ -14,7 +14,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import config
-
+ 
 # Ensure UTF-8 output on Windows consoles
 if hasattr(sys.stdout, "reconfigure"):
     try:

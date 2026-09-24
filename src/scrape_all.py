@@ -6,7 +6,7 @@ NO SYNTHETIC DATA IS USED.
 
 import os
 import sys
-import pandas as pd
+import pandas as pd 
 
 import config
 from scraper_amazon import scrape_amazon

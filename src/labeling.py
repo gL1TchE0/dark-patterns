@@ -4,7 +4,7 @@ Applies rule-based labeling for clear-cut High/Low risk listings,
 flags ambiguous cases as Medium, and provides a CLI tool for manual review.
 """
 
-import sys
+import sys 
 
 if hasattr(sys.stdout, "reconfigure"):
     try:

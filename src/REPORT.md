@@ -7,7 +7,7 @@
 
 ---
 
-## 1. Executive Summary
+## 1. Executive Summary 
 
 This study analyzed **613 product listings** scraped from Flipkart and Amazon India 
 across 4 product categories known to exhibit dark patterns. 
