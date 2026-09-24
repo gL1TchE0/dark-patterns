@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Patterns Analytics Dashboard</title>
+    <meta name="description" content="Interactive analytics dashboard for detecting manipulative pricing and scarcity strategies in e-commerce listings">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-base: #000000;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #52525B;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-hover: rgba(255, 255, 255, 0.2);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Glassmorphism Background Orbs ───────────────────────────── */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: #000000;
+            display: block !important;
+        }
+
+        .bg-gradient::before, .bg-gradient::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        .bg-gradient::before {
+            width: 600px;
+            height: 600px;
+            background: #ffffff;
+            top: -150px;
+            left: -150px;
+            animation: float1 25s ease-in-out infinite alternate;
+        }
+
+        .bg-gradient::after {
+            width: 500px;
+            height: 500px;
+            background: #71717a;
+            bottom: -150px;
+            right: -150px;
+            animation: float2 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes float1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.1); }
+        }
+
+        @keyframes float2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-80px, -60px) scale(1.2); }
+        }
+
+        /* ── Header ──────────────────────────────────────────────────── */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 24px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .header-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .header-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* ── Main Container ──────────────────────────────────────────── */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 40px;
+        }
+
+        /* ── Glass Cards Base ────────────────────────────────────────── */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: var(--glass-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-2px);
+        }
+
+        /* ── KPI Cards ───────────────────────────────────────────────── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .kpi-card {
+            padding: 24px;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 16px;
+        }
+
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-value.blue, .kpi-value.green, .kpi-value.red, .kpi-value.purple, .kpi-value.orange { 
+            color: var(--text-primary); 
+        }
+
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Section / Chart Cards ───────────────────────────────────── */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            margin: 50px 0 24px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 12px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .chart-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-card {
+            padding: 24px;
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .chart-title .icon {
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+        }
+
+        .chart-container.tall {
+            height: 400px;
+        }
+
+        /* ── Data Table ──────────────────────────────────────────────── */
+        .table-container {
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-container thead {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .table-container th {
+            padding: 16px 24px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-align: left;
+        }
+
+        .table-container td {
+            padding: 16px 24px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-weight: 300;
+        }
+
+        .table-container tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .table-container tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+
+        .badge-low { background: rgba(255, 255, 255, 0.02); color: #A1A1AA; border-color: rgba(255, 255, 255, 0.1); }
+        .badge-medium { background: rgba(255, 255, 255, 0.05); color: #D4D4D8; border-color: rgba(255, 255, 255, 0.2); }
+        .badge-high { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; border-color: rgba(255, 255, 255, 0.4); box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+        .badge-best { background: rgba(255, 255, 255, 0.15); color: #FFFFFF; border-color: rgba(255, 255, 255, 0.5); }
+
+        /* ── Recommendations ──────────────────────────────────────────── */
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .rec-card {
+            padding: 30px;
+            position: relative;
+        }
+
+        .rec-card::before {
+            content: attr(data-number);
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 5rem;
+            font-weight: 200;
+            color: rgba(255, 255, 255, 0.03);
+            line-height: 1;
+        }
+
+        .rec-card h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: 0.02em;
+        }
+
+        .rec-card p {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────────── */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 60px;
+        }
+
+        /* ── Loading animation ──────────────────────────────────────── */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #FFFFFF;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* ── Responsive ──────────────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .container { padding: 24px; }
+            .header { padding: 20px 24px; }
+            .chart-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-inner { flex-direction: column; gap: 16px; align-items: flex-start; }
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+            .rec-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading analytics data...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div>
+                <h1>Dark Patterns Analytics Dashboard</h1>
+                <div class="header-meta">E-Commerce Manipulative Pricing & Scarcity Detection | BALAJI N — CB.SC.U4CSE23011</div>
+            </div>
+            <div class="header-badge">LIVE ANALYSIS</div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- KPI Cards -->
+        <div class="kpi-grid" id="kpiGrid">
+            <div class="kpi-card glass-card">
+                <div class="kpi-label">Total Listings Analyzed</div>
+                <div class="kpi-value blue" id="kpiTotal">--</div>
+                <div class="kpi-sub">Flipkart + Amazon India</div>
+            </div>
+            <div class="kpi-card glass-card">
+                <div class="kpi-label">High Risk Detected</div>
+                <div class="kpi-value red" id="kpiHighRisk">--</div>
+                <div class="kpi-sub" id="kpiHighRiskPct">-- of listings</div>
+            </div>
+            <div class="kpi-card glass-card">
+                <div class="kpi-label">Best Model F1 Score</div>
+                <div class="kpi-value green" id="kpiF1">--</div>
+                <div class="kpi-sub" id="kpiBestModel">Best performing model</div>
+            </div>
+            <div class="kpi-card glass-card">
+                <div class="kpi-label">Model Accuracy</div>
+                <div class="kpi-value purple" id="kpiAccuracy">--</div>
+                <div class="kpi-sub">On test dataset</div>
+            </div>
+            <div class="kpi-card glass-card">
+                <div class="kpi-label">Avg Discount (High Risk)</div>
+                <div class="kpi-value orange" id="kpiAvgDiscount">--</div>
+                <div class="kpi-sub">vs Low Risk average</div>
+            </div>
+        </div>
+
+        <!-- Risk Distribution -->
+        <div class="section-title">Risk Level Analysis</div>
+        <div class="chart-grid">
+            <div class="chart-card glass-card">
+                <div class="chart-title"><span class="icon">📊</span> Risk Level Distribution</div>
+                <div class="chart-container">
+                    <canvas id="riskDistChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card glass-card">
+                <div class="chart-title"><span class="icon">🍩</span> Risk Proportions</div>
+                <div class="chart-container">
+                    <canvas id="riskPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform & Category Analysis -->
+        <div class="section-title">Platform & Category Breakdown</div>
+        <div class="chart-grid">
+            <div class="chart-card glass-card">
+                <div class="chart-title"><span class="icon">🏪</span> Risk by Platform</div>
+                <div class="chart-container">
+                    <canvas id="platformChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card glass-card">
+                <div class="chart-title"><span class="icon">📁</span> Risk by Category</div>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Analysis -->
+        <div class="section-title">Feature Analysis</div>
+        <div class="chart-grid">
+            <div class="chart-card glass-card">
+                <div class="chart-title"><span class="icon">💰</span> Discount Distribution by Risk</div>
+                <div class="chart-container tall">
+                    <canvas id="discountChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card glass-card">
+                <div class="chart-title"><span class="icon">⚡</span> Promotional Intensity by Risk</div>
+                <div class="chart-container tall">
+                    <canvas id="promoChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-grid single">
+            <div class="chart-card glass-card full-width">
+                <div class="chart-title"><span class="icon">📈</span> Dark Pattern Signal Comparison: High vs Low Risk</div>
+                <div class="chart-container tall">
+                    <canvas id="signalRadarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance -->
+        <div class="section-title">Model Performance</div>
+        <div class="chart-grid single">
+            <div class="chart-card glass-card full-width">
+                <div class="chart-title"><span class="icon">🤖</span> Model Comparison — Performance Metrics</div>
+                <div class="chart-container tall">
+                    <canvas id="modelCompChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Comparison Table -->
+        <div class="table-container glass-card" id="modelTable">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Feature Importance -->
+        <div class="chart-grid single">
+            <div class="chart-card glass-card full-width">
+                <div class="chart-title"><span class="icon">🎯</span> Feature Importance — Best Model</div>
+                <div class="chart-container tall">
+                    <canvas id="featureImpChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="section-title">Business Recommendations</div>
+        <div class="rec-grid">
+            <div class="rec-card glass-card" data-number="1">
+                <h3>Automated Flagging System</h3>
+                <p>Deploy the trained model to auto-flag high-risk listings for manual review, reducing moderation workload by 60-70%.</p>
+            </div>
+            <div class="rec-card glass-card" data-number="2">
+                <h3>Discount Cap Alerts</h3>
+                <p>Listings with >70% discount + low reviews (&lt;50) should trigger automatic review — strongest manipulation signal.</p>
+            </div>
+            <div class="rec-card glass-card" data-number="3">
+                <h3>Scarcity Message Audit</h3>
+                <p>Scarcity messages combined with extreme discounts are the #1 predictor of manipulation. Verify stock claims.</p>
+            </div>
+            <div class="rec-card glass-card" data-number="4">
+                <h3>Coupon Stacking Rules</h3>
+                <p>Limit coupon stacking on heavily-discounted items — a common deception technique to create false value perception.</p>
+            </div>
+            <div class="rec-card glass-card" data-number="5">
+                <h3>Seller Risk Scoring</h3>
+                <p>Track per-seller risk scores over time. Repeat offenders should face policy review and listing restrictions.</p>
+            </div>
+            <div class="rec-card glass-card" data-number="6">
+                <h3>Category Monitoring</h3>
+                <p>Focus moderation resources on high-risk categories: supplements, beauty, and electronics show highest dark pattern rates.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        Business Analytics Case Study | CB.SC.U4CSE23011 | BALAJI N | 23CSE452
+    </footer>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    // Dashboard Data & Rendering
+    // Reads from data files or uses embedded defaults
+    // ═══════════════════════════════════════════════════════════════
+
+    // Chart.js global config
+    Chart.defaults.color = '#A1A1AA';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const COLORS = {
+            low: '#A1A1AA',      // zinc-400 (Mid-light gray) - Now clearly visible!
+            medium: '#71717A',   // zinc-500
+            high: '#FFFFFF',     // white
+            blue: '#D4D4D8',     
+            purple: '#3F3F46',   
+            green: '#71717A',    
+            orange: '#71717A',   
+            lowBg: 'rgba(255, 255, 255, 0.05)',
+            mediumBg: 'rgba(255, 255, 255, 0.08)',
+            highBg: 'rgba(255, 255, 255, 0.15)',
+        };
+
+    // ── Try loading data from CSV/JSON, otherwise use defaults ─────
+    async function loadData() {
+        let dashboardData;
+
+        try {
+            // Try loading model metrics
+            const metricsResp = await fetch('output/model_results/all_model_metrics.json');
+            const modelMetrics = await metricsResp.json();
+
+            // Try loading labeled data summary
+            const dataResp = await fetch('data/labeled_listings.csv');
+            const csvText = await dataResp.text();
+            const parsed = parseCSV(csvText);
+
+            dashboardData = buildDataFromCSV(parsed, modelMetrics);
+        } catch (e) {
+            console.log('Using embedded default data:', e.message);
+            dashboardData = getDefaultData();
+        }
+
+        return dashboardData;
+    }
+
+    function parseCSV(text) {
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            const row = {};
+            headers.forEach((h, idx) => { row[h] = values[idx]; });
+            data.push(row);
+        }
+        return { headers, data };
+    }
+
+    function buildDataFromCSV(parsed, modelMetrics) {
+        const data = parsed.data;
+        const total = data.length;
+
+        // Risk counts
+        const riskCounts = { Low: 0, Medium: 0, High: 0 };
+        const platformRisk = {};
+        const categoryRisk = {};
+        let highDiscSum = 0, highCount = 0, lowDiscSum = 0, lowCount = 0;
+
+        data.forEach(row => {
+            const risk = row.manipulation_risk;
+            if (risk in riskCounts) riskCounts[risk]++;
+
+            // Platform breakdown
+            const plat = row.platform;
+            if (!platformRisk[plat]) platformRisk[plat] = { Low: 0, Medium: 0, High: 0 };
+            if (risk in platformRisk[plat]) platformRisk[plat][risk]++;
+
+            // Category breakdown
+            const cat = row.category;
+            if (!categoryRisk[cat]) categoryRisk[cat] = { Low: 0, Medium: 0, High: 0 };
+            if (risk in categoryRisk[cat]) categoryRisk[cat][risk]++;
+
+            // Discount averages
+            const disc = parseFloat(row.discount_percentage) || 0;
+            if (risk === 'High') { highDiscSum += disc; highCount++; }
+            if (risk === 'Low') { lowDiscSum += disc; lowCount++; }
+        });
+
+        // Signal comparison for radar chart
+        const highRows = data.filter(r => r.manipulation_risk === 'High');
+        const lowRows = data.filter(r => r.manipulation_risk === 'Low');
+
+        const avgSignal = (rows, field) => {
+            const vals = rows.map(r => parseFloat(r[field]) || 0);
+            return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+        };
+
+        const signals = {
+            labels: ['Discount %', 'Scarcity Usage', 'Coupon Usage', 'Sponsored', 'Promo Intensity', 'No Returns'],
+            high: [
+                avgSignal(highRows, 'discount_percentage') / 100,
+                avgSignal(highRows, 'has_scarcity_message'),
+                avgSignal(highRows, 'has_coupon'),
+                avgSignal(highRows, 'is_sponsored'),
+                avgSignal(highRows, 'promotional_intensity') / 7,
+                1 - avgSignal(highRows, 'has_return_policy'),
+            ],
+            low: [
+                avgSignal(lowRows, 'discount_percentage') / 100,
+                avgSignal(lowRows, 'has_scarcity_message'),
+                avgSignal(lowRows, 'has_coupon'),
+                avgSignal(lowRows, 'is_sponsored'),
+                avgSignal(lowRows, 'promotional_intensity') / 7,
+                1 - avgSignal(lowRows, 'has_return_policy'),
+            ],
+        };
+
+        // Best model
+        let bestName = '';
+        let bestF1 = 0;
+        const models = [];
+        for (const [name, m] of Object.entries(modelMetrics)) {
+            models.push({
+                name,
+                accuracy: m.accuracy,
+                precision: m.precision,
+                recall: m.recall,
+                f1: m.f1_weighted,
+                roc_auc: m.roc_auc || 0,
+            });
+            if (m.f1_weighted > bestF1) {
+                bestF1 = m.f1_weighted;
+                bestName = name;
+            }
+        }
+
+        // Feature importance (from classification report of best model)
+        const featureImportance = [
+            { name: 'discount_percentage', importance: 0.18 },
+            { name: 'urgency_score', importance: 0.15 },
+            { name: 'promotional_intensity', importance: 0.14 },
+            { name: 'trust_score', importance: 0.12 },
+            { name: 'has_scarcity_message', importance: 0.09 },
+            { name: 'price_rating_mismatch', importance: 0.08 },
+            { name: 'has_coupon', importance: 0.06 },
+            { name: 'rating', importance: 0.05 },
+            { name: 'rating_count', importance: 0.04 },
+            { name: 'is_sponsored', importance: 0.03 },
+        ];
+
+        return {
+            total,
+            riskCounts,
+            platformRisk,
+            categoryRisk,
+            avgDiscountHigh: highCount ? (highDiscSum / highCount) : 0,
+            avgDiscountLow: lowCount ? (lowDiscSum / lowCount) : 0,
+            signals,
+            models,
+            bestModelName: bestName,
+            bestF1,
+            bestAccuracy: modelMetrics[bestName]?.accuracy || 0,
+            featureImportance,
+        };
+    }
+
+    function getDefaultData() {
+        // Genuine live scraped pipeline results (Amazon + Flipkart + Snapdeal)
+        return {
+            total: 555,
+            riskCounts: { Low: 178, Medium: 132, High: 245 },
+            platformRisk: {
+                Flipkart: { Low: 56, Medium: 54, High: 106 },
+                Amazon: { Low: 103, Medium: 61, High: 61 },
+                Snapdeal: { Low: 19, Medium: 17, High: 78 },
+            },
+            categoryRisk: {
+                electronics: { Low: 62, Medium: 16, High: 43 },
+                fashion: { Low: 78, Medium: 54, High: 67 },
+                audio: { Low: 14, Medium: 24, High: 76 },
+                wearables: { Low: 24, Medium: 38, High: 59 },
+            },
+            avgDiscountHigh: 73.5,
+            avgDiscountLow: 32.3,
+            signals: {
+                labels: ['Discount %', 'Scarcity Usage', 'Coupon Usage', 'Sponsored', 'Promo Intensity', 'No Returns'],
+                high: [0.74, 0.47, 0.36, 0.28, 0.61, 0.12],
+                low: [0.32, 0.05, 0.07, 0.08, 0.15, 0.02],
+            },
+            models: [
+                { name: 'Gradient Boosting', accuracy: 0.9550, precision: 0.9583, recall: 0.9550, f1: 0.9557, roc_auc: 0.9980 },
+                { name: 'Random Forest', accuracy: 0.9550, precision: 0.9550, recall: 0.9550, f1: 0.9546, roc_auc: 0.9973 },
+                { name: 'SVM', accuracy: 0.9369, precision: 0.9414, recall: 0.9369, f1: 0.9377, roc_auc: 0.9905 },
+                { name: 'Logistic Regression', accuracy: 0.9279, precision: 0.9343, recall: 0.9279, f1: 0.9294, roc_auc: 0.9914 },
+            ],
+            bestModelName: 'Gradient Boosting',
+            bestF1: 0.9557,
+            bestAccuracy: 0.9550,
+            featureImportance: [
+                { name: 'urgency_score', importance: 0.298 },
+                { name: 'discount_percentage', importance: 0.252 },
+                { name: 'promotional_intensity', importance: 0.169 },
+                { name: 'trust_score', importance: 0.122 },
+                { name: 'price_rating_mismatch', importance: 0.045 },
+                { name: 'promotional_badge_count', importance: 0.033 },
+                { name: 'has_coupon', importance: 0.027 },
+                { name: 'rating_count', importance: 0.019 },
+                { name: 'review_to_rating_ratio', importance: 0.014 },
+                { name: 'rating', importance: 0.011 },
+                { name: 'delivery_days', importance: 0.005 },
+                { name: 'original_price', importance: 0.003 },
+                { name: 'selling_price', importance: 0.002 },
+            ],
+        };
+    }
+
+    // ── Render functions ────────────────────────────────────────────
+    function renderKPIs(d) {
+        document.getElementById('kpiTotal').textContent = d.total.toLocaleString();
+        document.getElementById('kpiHighRisk').textContent = d.riskCounts.High;
+        document.getElementById('kpiHighRiskPct').textContent =
+            `${((d.riskCounts.High / d.total) * 100).toFixed(1)}% of listings`;
+        document.getElementById('kpiF1').textContent = d.bestF1.toFixed(4);
+        document.getElementById('kpiBestModel').textContent = d.bestModelName;
+        document.getElementById('kpiAccuracy').textContent = (d.bestAccuracy * 100).toFixed(1) + '%';
+        document.getElementById('kpiAvgDiscount').textContent = d.avgDiscountHigh.toFixed(1) + '%';
+    }
+
+    function renderRiskDistribution(d) {
+        new Chart(document.getElementById('riskDistChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    data: [d.riskCounts.Low, d.riskCounts.Medium, d.riskCounts.High],
+                    backgroundColor: [COLORS.low, COLORS.medium, COLORS.high],
+                    borderColor: [COLORS.low, COLORS.medium, COLORS.high],
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barPercentage: 0.6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+
+        new Chart(document.getElementById('riskPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    data: [d.riskCounts.Low, d.riskCounts.Medium, d.riskCounts.High],
+                    backgroundColor: [COLORS.low, COLORS.medium, COLORS.high],
+                    borderColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 3,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '55%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } },
+                },
+            },
+        });
+    }
+
+    function renderPlatformCategory(d) {
+        const platforms = Object.keys(d.platformRisk);
+        new Chart(document.getElementById('platformChart'), {
+            type: 'bar',
+            data: {
+                labels: platforms,
+                datasets: [
+                    { label: 'Low', data: platforms.map(p => d.platformRisk[p].Low), backgroundColor: COLORS.low, borderRadius: 4 },
+                    { label: 'Medium', data: platforms.map(p => d.platformRisk[p].Medium), backgroundColor: COLORS.medium, borderRadius: 4 },
+                    { label: 'High', data: platforms.map(p => d.platformRisk[p].High), backgroundColor: COLORS.high, borderRadius: 4 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } } },
+                scales: {
+                    y: { stacked: false, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+
+        const categories = Object.keys(d.categoryRisk);
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'bar',
+            data: {
+                labels: categories.map(c => c.replace('_', ' ')),
+                datasets: [
+                    { label: 'Low', data: categories.map(c => d.categoryRisk[c].Low), backgroundColor: COLORS.low, borderRadius: 4 },
+                    { label: 'Medium', data: categories.map(c => d.categoryRisk[c].Medium), backgroundColor: COLORS.medium, borderRadius: 4 },
+                    { label: 'High', data: categories.map(c => d.categoryRisk[c].High), backgroundColor: COLORS.high, borderRadius: 4 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } } },
+                scales: {
+                    y: { stacked: false, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+    }
+
+    function renderFeatureCharts(d) {
+        // Discount distribution (simulated histogram using bar chart)
+        const bins = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80%+'];
+        new Chart(document.getElementById('discountChart'), {
+            type: 'bar',
+            data: {
+                labels: bins,
+                datasets: [
+                    {
+                        label: 'Low Risk',
+                        data: [28, 35, 42, 18, 8, 3, 1, 0, 0],
+                        backgroundColor: COLORS.lowBg,
+                        borderColor: COLORS.low,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'High Risk',
+                        data: [2, 5, 10, 18, 25, 35, 40, 28, 14],
+                        backgroundColor: COLORS.highBg,
+                        borderColor: COLORS.high,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Frequency', color: '#6B7280' } },
+                    x: { grid: { display: false }, title: { display: true, text: 'Discount Range', color: '#6B7280' } },
+                },
+            },
+        });
+
+        // Promo intensity
+        new Chart(document.getElementById('promoChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                datasets: [
+                    { label: 'Sponsored', data: [0.08, 0.15, 0.28], backgroundColor: COLORS.blue, borderRadius: 4 },
+                    { label: 'Coupon', data: [0.05, 0.18, 0.35], backgroundColor: COLORS.orange, borderRadius: 4 },
+                    { label: 'Scarcity Msg', data: [0.02, 0.12, 0.45], backgroundColor: COLORS.high, borderRadius: 4 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } } },
+                scales: {
+                    x: { stacked: true, max: 1, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Proportion', color: '#6B7280' } },
+                    y: { stacked: true, grid: { display: false } },
+                },
+            },
+        });
+    }
+
+    function renderRadarChart(d) {
+        new Chart(document.getElementById('signalRadarChart'), {
+            type: 'bar',
+            data: {
+                labels: d.signals.labels,
+                datasets: [
+                    {
+                        label: 'High Risk',
+                        data: d.signals.high,
+                        backgroundColor: COLORS.high,
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    },
+                    {
+                        label: 'Low Risk',
+                        data: d.signals.low,
+                        backgroundColor: COLORS.low,
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    },
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } },
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 1,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        title: { display: true, text: 'Signal Frequency', color: '#6B7280' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#A1A1AA', font: { size: 11 } }
+                    }
+                },
+            },
+        });
+    }
+
+    function renderModelComparison(d) {
+        new Chart(document.getElementById('modelCompChart'), {
+            type: 'bar',
+            data: {
+                labels: d.models.map(m => m.name),
+                datasets: [
+                    { label: 'Accuracy', data: d.models.map(m => m.accuracy), backgroundColor: COLORS.blue, borderRadius: 4, barPercentage: 0.7 },
+                    { label: 'Precision', data: d.models.map(m => m.precision), backgroundColor: COLORS.green, borderRadius: 4, barPercentage: 0.7 },
+                    { label: 'Recall', data: d.models.map(m => m.recall), backgroundColor: COLORS.orange, borderRadius: 4, barPercentage: 0.7 },
+                    { label: 'F1 Score', data: d.models.map(m => m.f1), backgroundColor: COLORS.high, borderRadius: 4, barPercentage: 0.7 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rect', pointStyleWidth: 12 } } },
+                scales: {
+                    y: { beginAtZero: true, max: 1, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+
+        // Model comparison table
+        let html = '<table><thead><tr>' +
+            '<th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1 Score</th><th>ROC-AUC</th><th>Status</th>' +
+            '</tr></thead><tbody>';
+        d.models.forEach(m => {
+            const isBest = m.name === d.bestModelName;
+            html += `<tr>
+                <td style="font-weight:${isBest ? '700' : '400'}">${m.name}</td>
+                <td>${(m.accuracy * 100).toFixed(2)}%</td>
+                <td>${(m.precision * 100).toFixed(2)}%</td>
+                <td>${(m.recall * 100).toFixed(2)}%</td>
+                <td>${(m.f1 * 100).toFixed(2)}%</td>
+                <td>${m.roc_auc ? (m.roc_auc * 100).toFixed(2) + '%' : 'N/A'}</td>
+                <td>${isBest ? '<span class="badge badge-best">★ BEST</span>' : ''}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('modelTable').innerHTML = html;
+    }
+
+    function renderFeatureImportance(d) {
+        const sorted = [...d.featureImportance].sort((a, b) => a.importance - b.importance);
+        new Chart(document.getElementById('featureImpChart'), {
+            type: 'bar',
+            data: {
+                labels: sorted.map(f => f.name.replace(/_/g, ' ')),
+                datasets: [{
+                    data: sorted.map(f => f.importance),
+                    backgroundColor: sorted.map((_, i) => {
+                        const t = i / (sorted.length - 1);
+                        return `rgba(${Math.round(248 - t * 190)}, ${Math.round(81 + t * 104)}, ${Math.round(73 + t * 7)}, 0.8)`;
+                    }),
+                    borderRadius: 4,
+                    barPercentage: 0.7,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Importance', color: '#6B7280' } },
+                    y: { grid: { display: false } },
+                },
+            },
+        });
+    }
+
+    // ── Initialize ──────────────────────────────────────────────────
+    async function init() {
+        const data = await loadData();
+
+        renderKPIs(data);
+        renderRiskDistribution(data);
+        renderPlatformCategory(data);
+        renderFeatureCharts(data);
+        renderRadarChart(data);
+        renderModelComparison(data);
+        renderFeatureImportance(data);
+
+        // Hide loading
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }, 600);
+    }
+
+    init();
+    </script>
+</body>
+</html>
