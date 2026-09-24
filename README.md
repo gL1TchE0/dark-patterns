@@ -142,7 +142,6 @@ This runs all 7 phases end-to-end:
 ##  Report
 
 The full case study report is available in two formats:
-- **Word:** `CB.SC.U4CSE23011_Case_Study_Report.docx`
 - **PDF:** `CB.SC.U4CSE23011_Case_Study_Report.pdf`
 
 ---
